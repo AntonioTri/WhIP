@@ -17,6 +17,7 @@ struct ContentView: View {
     
     var body: some View {
         Sview(viewModel: viewModel)
+            .edgesIgnoringSafeArea(.all)
     }
     
 }
@@ -33,10 +34,17 @@ struct Sview: View {
         scene.setViewModel(viewModel: viewModel)
         return scene
     }
+    
+    var xPosition = UIScreen.main.bounds.width
+    var yPosition = UIScreen.main.bounds.height
 
     var body: some View {
-      
-        SpriteView(scene: scene)
+        ZStack{
+            SpriteView(scene: scene)
+               
+            
+        }
+        
         
     }
     

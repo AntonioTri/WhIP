@@ -15,7 +15,6 @@ import AVFoundation
 
 var scroll = 0.0
 var previousScroll = 0.0
-var canTrow = true
 
 struct Sview: View {
     
@@ -94,10 +93,8 @@ struct ContentView: View {
                     previousScrollAmount = tempScrollAmount
                     previousScroll = tempScrollAmount
                     
-                    // Calcolo e visualizzazione della velocità
-                    let tempoTrascorso = Date().timeIntervalSince(startTime) // Calcola il tempo trascorso
+                    let tempoTrascorso = Date().timeIntervalSince(startTime)
                     speed = abs(scrollAmount - previousScrollAmount) / tempoTrascorso
-                    
                     
                     startTime = Date()
                     
@@ -105,18 +102,17 @@ struct ContentView: View {
                         force = calculateForce(leverAngle: newValue)
                     }
                     
-                    viewModel.sendMessage(key: "vittoria", value: Int(scrollAmount))
-                    
                 }
+                
                 .onAppear(perform:{
                     self.startGyroscopeUpdates()
                     self.startAccelerometerUpdates()
-//                    self.startCheckingAngle()
                 })
 
             
             //vista spritekit
             Sview(viewModel: viewModel)
+                .edgesIgnoringSafeArea(.all)
             //Vista della leva
             LevaView(angle: $scrollAmount)
             
@@ -128,7 +124,7 @@ struct ContentView: View {
     
     private func startAccelerometerUpdates() {
         motionManager.accelerometerUpdateInterval = 0.1
-        if motionManager.isAccelerometerAvailable && canTrow {
+        if motionManager.isAccelerometerAvailable {
             motionManager.startAccelerometerUpdates(to: .main) { (data, error) in
                 guard let acceleration = data?.acceleration else { return }
                 
@@ -141,7 +137,7 @@ struct ContentView: View {
     
     private func startGyroscopeUpdates() {
         motionManager.gyroUpdateInterval = 0.1
-        if motionManager.isGyroAvailable && canTrow {
+        if motionManager.isGyroAvailable {
             motionManager.startGyroUpdates(to: .main) { (data, error) in
                 guard let gyroData = data else { return }
                 self.gyroData = gyroData
@@ -153,7 +149,7 @@ struct ContentView: View {
     // Aggiorna il metodo handleAcceleration(_:) nel ContentView
     private func handleAcceleration(_ acceleration: CMAcceleration) {
         
-        if canTrow {
+        if viewModel.canTrow == 1 {
             
             currentValue = 0
             
@@ -163,8 +159,8 @@ struct ContentView: View {
                 let deltaZ = acceleration.z - previousAcceleration.z
                 let magnitude = sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ)
                 
-                let maxAcceleration: Double = 2.0 // Massima accelerazione per raggiungere 100
-                let speed = min(magnitude / maxAcceleration * 1000, 1000) // Calcolo della velocità
+                let maxAcceleration: Double = 2.0
+                let speed = min(magnitude / maxAcceleration * 1000, 2000)
             
                 currentValue = speed
                 if currentValue > maxAcceleration {
@@ -175,15 +171,32 @@ struct ContentView: View {
                 // che il lancio è estato eseguito, andando a disattivare il lock a questo blocco
                 // di codice per impedirne le future esecuzioni fin quando la flag non viene
                 // resettata durante la fine della simulazione
-                if canTrow && currentValue > 800 && deltaY > -0.50{
+                if viewModel.canTrow == 1 && currentValue > 1500 && deltaY > -0.50{
                     
                     print("Hai eseguito un lancio")
-                    canTrow = false
+                    viewModel.canTrow = 0
                     currentValue = 0
+                    setSemaferoRed = true
                     print("Provo ad inviare i segnali di lancio")
                     viewModel.sendMessage(key: "trow", value: 1)
                     viewModel.maxAcceleration = 0
-
+                    
+                    // Si prelaziona un tempo alla fine del quale se il segnale non è stato ricevuto
+                    // Viene reimpostata la possibilità di lanciare
+                    Timer.scheduledTimer(withTimeInterval: 3, repeats: false){ _ in
+                        // Controllo per osservare se l'iphone ha ricevuto il segnale
+                        if viewModel.trowSignalRecieved == 0 {
+                            // Se il segnale non è arrivato, viene reimpostata la possibilitò di pescare
+                            viewModel.canTrow = 1
+                            setSemaferoGreen = true
+                            
+                        // Altrimenti il segnale è arrivato correttamente e viene resettato localmente
+                        } else {
+                            viewModel.trowSignalRecieved = 0
+                            viewModel.sendMessage(key: "trow", value: 0)
+                        }
+                    }
+                    
                 }
             }
 
@@ -191,43 +204,6 @@ struct ContentView: View {
             
         }
 
-    }
-    
-    // Funzione per avviare il timer per controllare l'angolo della leva
-    private func startCheckingAngle() {
-        
-        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-            
-            let currentAngle = scroll
-            let difference = abs(currentAngle - previousScroll)
-            // Controllo se la differenza è significativa
-            if difference > 1 {
-                // Calcolo della velocità di riproduzione dell'audio in base a 'currentDifference'
-                var rate: Float = 1.0
-                if strenghtGlobal == 0 || strenghtGlobal == 1 {
-                    rate = 3
-                } else if strenghtGlobal == 3 || strenghtGlobal == 4 {
-                    rate = 2
-                } else if strenghtGlobal > 4 {
-                    rate = 1
-                }
-    
-                // Avvio della riproduzione dell'audio solo se non è già in riproduzione
-                if let audioPlayer = audioPlayer, !audioPlayer.isPlaying {
-                    print("Entro nella simulazione suono")
-                    audioPlayer.rate = rate
-                    audioPlayer.play()
-                }
-                
-            } else {
-                // Ferma l'audio se l'angolo non cambia significativamente
-                if let audioPlayer = audioPlayer {
-                    audioPlayer.stop()
-                }
-            }
-            // Aggiorna l'angolo precedente
-            previousScroll = currentAngle
-        }
     }
     
     private func calculateForce(leverAngle: Double) -> Double {

@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D81B08D62BA9E7D300658D07 /* ambience.wav in Resources */ = {isa = PBXBuildFile; fileRef = D81B08D52BA9E7D300658D07 /* ambience.wav */; };
+		D81B08D82BA9EA6900658D07 /* baitingSound.wav in Resources */ = {isa = PBXBuildFile; fileRef = D81B08D72BA9EA6900658D07 /* baitingSound.wav */; };
+		D81B08DA2BA9F0C000658D07 /* frCast.wav in Resources */ = {isa = PBXBuildFile; fileRef = D81B08D92BA9F0C000658D07 /* frCast.wav */; };
+		D81B08DC2BA9F31900658D07 /* baitLandins.wav in Resources */ = {isa = PBXBuildFile; fileRef = D81B08DB2BA9F31900658D07 /* baitLandins.wav */; };
+		D81B08DE2BA9F62300658D07 /* buttonClick.wav in Resources */ = {isa = PBXBuildFile; fileRef = D81B08DD2BA9F62300658D07 /* buttonClick.wav */; };
 		D89837042BA5DFC800EB44CE /* Lenza_lenta.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D89837032BA5DFC800EB44CE /* Lenza_lenta.mp3 */; };
 		D8F654CB2B9EF42A00ADEA9D /* WhipDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F654CA2B9EF42A00ADEA9D /* WhipDemoApp.swift */; };
 		D8F654CD2B9EF42A00ADEA9D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F654CC2B9EF42A00ADEA9D /* ContentView.swift */; };
@@ -54,6 +59,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D81B08D52BA9E7D300658D07 /* ambience.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ambience.wav; sourceTree = "<group>"; };
+		D81B08D72BA9EA6900658D07 /* baitingSound.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = baitingSound.wav; sourceTree = "<group>"; };
+		D81B08D92BA9F0C000658D07 /* frCast.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = frCast.wav; sourceTree = "<group>"; };
+		D81B08DB2BA9F31900658D07 /* baitLandins.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = baitLandins.wav; sourceTree = "<group>"; };
+		D81B08DD2BA9F62300658D07 /* buttonClick.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = buttonClick.wav; sourceTree = "<group>"; };
 		D871A8A82B8E74A3004C5C26 /* VibrationsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibrationsApp.swift; sourceTree = "<group>"; };
 		D871A8AA2B8E74A3004C5C26 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D871A8B82B8E74DE004C5C26 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
@@ -128,6 +138,11 @@
 				D8F654CC2B9EF42A00ADEA9D /* ContentView.swift */,
 				D8F654FA2B9EFF5100ADEA9D /* GameSceneIphone.sks */,
 				D8F654FC2B9EFF7B00ADEA9D /* SKScriptIphone.swift */,
+				D81B08D52BA9E7D300658D07 /* ambience.wav */,
+				D81B08D72BA9EA6900658D07 /* baitingSound.wav */,
+				D81B08D92BA9F0C000658D07 /* frCast.wav */,
+				D81B08DB2BA9F31900658D07 /* baitLandins.wav */,
+				D81B08DD2BA9F62300658D07 /* buttonClick.wav */,
 				D8F654CE2B9EF42C00ADEA9D /* Assets.xcassets */,
 				D8F654D02B9EF42C00ADEA9D /* Preview Content */,
 			);
@@ -248,8 +263,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D81B08D62BA9E7D300658D07 /* ambience.wav in Resources */,
+				D81B08DA2BA9F0C000658D07 /* frCast.wav in Resources */,
+				D81B08DC2BA9F31900658D07 /* baitLandins.wav in Resources */,
 				D8F654D22B9EF42C00ADEA9D /* Preview Assets.xcassets in Resources */,
 				D8F654FB2B9EFF5100ADEA9D /* GameSceneIphone.sks in Resources */,
+				D81B08DE2BA9F62300658D07 /* buttonClick.wav in Resources */,
+				D81B08D82BA9EA6900658D07 /* baitingSound.wav in Resources */,
 				D8F654CF2B9EF42C00ADEA9D /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -434,15 +454,14 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = it.anto.trid.WhipDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = it.anto.tridente.WhipDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -466,15 +485,14 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = it.anto.trid.WhipDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = it.anto.tridente.WhipDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -498,13 +516,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = WhipDemoWatch;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = it.anto.trid.WhipDemo;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = it.anto.tridente.WhipDemo;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = it.anto.trid.WhipDemo.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = it.anto.tridente.WhipDemo.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -530,13 +548,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = WhipDemoWatch;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = it.anto.trid.WhipDemo;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = it.anto.tridente.WhipDemo;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = it.anto.trid.WhipDemo.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = it.anto.tridente.WhipDemo.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;

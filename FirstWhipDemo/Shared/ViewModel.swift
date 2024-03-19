@@ -32,15 +32,13 @@ class ViewModel: ObservableObject{
     @Published var fineSimulazione: Int = -1
     @Published var inizioSimulazione: Int = -1
     @Published var canTrow: Int = 0
-    
     @Published var vittoria: Int = 0
-    
     @Published var pesca: Int = 0
     @Published var frDurability: Int = 100
-    
-    
+    @Published var connected: Bool = false
     @Published var showProgressBar = false
-    
+    @Published var trowSignalRecieved = 0
+    @Published var startSimulationRecieved = 0
     
     var valueModel: PassthroughSubject<Value, Never> = PassthroughSubject<Value, Never>()
     var requests: AnyCancellable?
@@ -80,9 +78,14 @@ class ViewModel: ObservableObject{
                 self.pesca = value.value
             case "frDurability":
                 self.frDurability = value.value
-                
+            case "trowSignalRecieved":
+                self.trowSignalRecieved = value.value
+            case "startSimulationRecieved":
+                self.startSimulationRecieved = value.value
             default:
                 print("Error. Path = \(value.path). Value = \(value.value)")
+                // Creo una variabile locale che svuota l'attuale valore in modo da pulire il processi di sink
+                let trash = value.value
             }
         })
         
@@ -94,7 +97,15 @@ class ViewModel: ObservableObject{
     }
     // Aggiungi questo metodo nella classe ViewModel
     
-  
+    func updateConnection(){
+        
+        if connectivityProvider.connectionEstablished {
+            connected = true
+        } else {
+            connected = false
+        }
+        
+    }
 
 
 

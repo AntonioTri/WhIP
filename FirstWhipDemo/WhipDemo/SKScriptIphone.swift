@@ -2,6 +2,7 @@
 import SpriteKit
 import Foundation
 import SwiftUI
+import AVFoundation
 
 
 var autolockLancio = true
@@ -24,6 +25,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     var fishingRod = SKSpriteNode()
     var fishingRodAttachPoint = SKSpriteNode()
     var progressionBar = SKSpriteNode()
+    var semafero = SKSpriteNode()
     
     //Nodo del trofeo del pesce pescato
     var fishTrophy1 = SKSpriteNode()
@@ -31,6 +33,11 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     
     //Variabili per i nodi del menù
     var menu = SKSpriteNode()
+    var playButton = SKSpriteNode()
+    var howToPlay = SKSpriteNode()
+    var istruzioni = SKSpriteNode()
+    var back = SKSpriteNode()
+    var mainMenu = SKSpriteNode()
     
     //Nodi e texture di ambiente
     var backgroundTextures = [SKTexture]()
@@ -51,6 +58,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     var infiniteFish2Animation = SKAction()
     var pullingUPFish1 = SKAction()
     var pullingUPFish2 = SKAction()
+    var youCanWhip = SKAction()
     
     // Animazioni di lancio
     var trowingFishingRod = SKAction()
@@ -63,12 +71,21 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     
     var oldLine = SKShapeNode()
     
+    var backGroundAmbiance = SKAction()
+    var baitingSound = SKAction()
+    var fishingRodCast = SKAction()
+
+    
     let velocitaOrizontale = -155.0
     let velocitaVerticale = Double.random(in: 1...100)
     var isMoving = false
     var autolockBG = true
     var showProgressBar = false
     var showRope = false
+    var canPressMainMenu = false
+    var setSemaferoGreen = false
+    var setSemaferoRed = false
+    var menuOpen = true
     var timer: Timer?
     
     var viewModel: ViewModel!
@@ -79,10 +96,52 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        self.animateTrophy(trophy: fishTrophy2, animation: infiniteFish2Animation)
-        self.fishingRod.run(pullingUPFish2)
-        self.menu.run(SKAction.moveTo(x: -1000, duration: 3))
-    
+        
+        let touch = touches.first
+        let position = touch!.location(in: self)
+
+        let currentNode = self.atPoint(position) as? SKSpriteNode
+        if currentNode == self.playButton {
+            
+            self.playButton.run(SKAction.playSoundFileNamed("buttonClick", waitForCompletion: true))
+            viewModel.sendMessage(key: "canTrow", value: 1)
+            self.menu.run(SKAction.group([SKAction.moveTo(y: 2000, duration: 0.8), fadeOut]) )
+            self.setSemaferoGreen = true
+            self.fishingRod.run(fadeIn)
+            self.semafero.run(fadeIn)
+            self.mainMenu.run(fadeIn)
+            self.canPressMainMenu = true
+            self.menuOpen = false
+        }
+            
+        if currentNode == self.howToPlay{
+            
+            self.howToPlay.run(SKAction.playSoundFileNamed("buttonClick", waitForCompletion: true))
+            self.menu.run(SKAction.group([SKAction.moveTo(x: -1600, duration: 0.8), fadeOut]) )
+            self.istruzioni.run(SKAction.group([SKAction.moveTo(x: 0, duration: 0.8), fadeIn]))
+            
+        }
+            
+        if currentNode == self.back {
+            
+            self.back.run(SKAction.playSoundFileNamed("buttonClick", waitForCompletion: true))
+            self.istruzioni.run(SKAction.group([SKAction.moveTo(x: 1600, duration: 0.8), fadeOut]))
+            self.menu.run(SKAction.group([SKAction.moveTo(x: 0, duration: 0.8), fadeIn]) )
+                
+        }
+        
+        if currentNode == self.mainMenu && self.canPressMainMenu {
+            
+            self.mainMenu.run(SKAction.playSoundFileNamed("buttonClick", waitForCompletion: true))
+            self.mainMenu.run(fadeOut)
+            self.fishingRod.run(fadeOut)
+            self.semafero.run(fadeOut)
+            self.menu.run(SKAction.group([SKAction.moveTo(y: 347, duration: 1), fadeIn]))
+            self.canPressMainMenu = false
+            self.setSemaferoRed = true
+            viewModel.sendMessage(key: "canTrow", value: 0)
+        }
+        
     }
     
     func didEnd(_ contact: SKPhysicsContact) {
@@ -107,6 +166,23 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
             contactCount = 0
             autolockAtterraggio = false
             galleggiante.run(baitGroupAnimation)
+            galleggiante.run(SKAction.playSoundFileNamed("baitLandins", waitForCompletion: true))
+            
+            // Questo controllo serve per controllare ciclicamente che il segnale di inizio simulazione sia arrivato
+            
+            Timer.scheduledTimer(withTimeInterval: 2, repeats: true){ timer in
+                
+                // Se questo non è arrivato viene inviato nuovamente il segnale
+                if self.viewModel.startSimulationRecieved == 0 {
+                    self.viewModel.sendMessage(key: "InizioSimulazione", value: 1)
+                    
+                // Altrimenti si invalida il timer e si riposta la variabile del segnale a 0 localmente
+                } else {
+                    self.viewModel.startSimulationRecieved = 0
+                    timer.invalidate()
+                }
+                
+            }
             
         } else if contactCount == 1 {
             
@@ -117,6 +193,21 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     }
     
     override func update(_ currentTime: TimeInterval) {
+        
+        // Si toglie la scritta "You Can Whip"
+        if setSemaferoRed {
+            setSemaferoRed = false
+            self.semafero.run(fadeOut)
+            Timer.scheduledTimer(withTimeInterval: 0.8, repeats: false){ _ in
+                self.semafero.run(self.fadeOut)
+            }
+        }
+        
+        // Si mostra la scritta "You Can Whip"
+        if setSemaferoGreen {
+            setSemaferoGreen = false
+            self.semafero.run(SKAction.group([fadeIn, youCanWhip]))
+        }
         
         // Disegnamo la lenza se ci troviamo nel giusto frame di animazione
         if self.showRope {
@@ -129,7 +220,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         }
         
         // Controllo per osservare se sia stato eseguito un lancio
-        if viewModel.trow == 1 && autolockLancio == true {
+        if viewModel.trow == 1 && autolockLancio && !self.menuOpen {
             // Script per eseguire il lancio
             self.trowAnimation()
         }
@@ -176,14 +267,31 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         self.progressionBar = childNode(withName: "progressionBar") as! SKSpriteNode
         self.fishingRodAttachPoint = childNode(withName: "FRAttachPoint") as! SKSpriteNode
         self.menu = childNode(withName: "Menu") as! SKSpriteNode
-
+        self.playButton = menu.childNode(withName: "Play") as! SKSpriteNode
+        self.howToPlay = menu.childNode(withName: "HowToPlay") as! SKSpriteNode
+        self.istruzioni = childNode(withName: "istruzioni") as! SKSpriteNode
+        self.back = istruzioni.childNode(withName: "back") as! SKSpriteNode
+        self.mainMenu = childNode(withName: "MainMenu") as! SKSpriteNode
+        
+        self.semafero = childNode(withName: "youCanWhip") as! SKSpriteNode
+        self.semafero.zPosition = 20
+        self.semafero.alpha = 0
+        
         barraOrizzontale.alpha = 0
         progressionBar.alpha = 0
-        
+        fishingRod.alpha = 0
        
+        // Creiamo i suoni
+        //BackGround
+        let backGroundSound = SKAction.playSoundFileNamed("ambience", waitForCompletion: true)
+        backGroundAmbiance = SKAction.repeatForever(backGroundSound)
         
-        //Carichiamo le texture
+        //Baiting
+        let baitingSnd = SKAction.playSoundFileNamed("baitingSound", waitForCompletion: true)
+        baitingSound = SKAction.repeatForever(baitingSnd)
         
+        //Fishing rod cast
+        fishingRodCast = SKAction.playSoundFileNamed("frCast", waitForCompletion: true)
         //Sprite backGround
         let bg1 = SKTexture(imageNamed: "sfondo0")
         let bg2 = SKTexture(imageNamed: "sfondo1")
@@ -227,6 +335,9 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         let pescaPesce22 = SKTexture(imageNamed: "pescaPesce22")
         let pescaPesce23 = SKTexture(imageNamed: "pescaPesce23")
         
+        let canWhip1 = SKTexture(imageNamed: "canWhip1")
+        let canWhip2 = SKTexture(imageNamed: "canWhip2")
+        
         backgroundTextures = [bg1, bg2, bg3, bg4, bg5, bg6]
         
         //Creiamo le diverse animazioni
@@ -234,6 +345,10 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         //Queste due azioni modificano l'alpha da 0 ad 1 e viceversa
         fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 0.5)
         fadeOut = SKAction.fadeAlpha(to: 0, duration: 0.7)
+        
+        // Animazioni per il "You Can Whip"
+        youCanWhip = SKAction.animate(with: [canWhip1, canWhip2], timePerFrame: 0.35)
+        youCanWhip = SKAction.repeatForever(youCanWhip)
         
         // Animazione per il backGround
         backGroundAnimation = SKAction.animate(with: backgroundTextures, timePerFrame: 0.3)
@@ -252,7 +367,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
             self.resetBools()
             self.showRope = true
         }
-        var trowing = SKAction.animate(with: [fishingRod2, fishingRod3, fishingRod4, fishingRod5, fishingRod6, fishingRod7], timePerFrame: 0.1)
+        let trowing = SKAction.animate(with: [fishingRod2, fishingRod3, fishingRod4, fishingRod5, fishingRod6, fishingRod7], timePerFrame: 0.1)
         let trowing2 = SKAction.animate(with: [fishingRod1, fishingRod8, fishingRod9, fishingRod8, fishingRod1], timePerFrame: 0.1)
         trowingFishingRod = SKAction.sequence([trowing, scriptedAction, trowing2])
         infiniteIdleAnimation = SKAction.animate(with: [fishingRod1], timePerFrame: 1)
@@ -297,6 +412,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         backgroundNode.run(repeatActionBG)
         
         addChild(backgroundNode)
+        backgroundNode.run(backGroundAmbiance)
         
     }
 
@@ -310,6 +426,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         Timer.scheduledTimer(withTimeInterval: 2, repeats: false){ _ in
             autolockLancio = true
             self.viewModel.sendMessage(key: "canTrow", value: 1)
+            self.setSemaferoGreen = true
         }
         
         //Si porta il valore della vittoria conservato nel viewModel a 0
@@ -321,6 +438,9 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         // Si nasconde la'amo da pesca e si pulisce l'ultima lenza disegnata
         self.showRope = false
         oldLine.removeFromParent()
+        // Faccio ricomparire il botone per tornare al menù
+        self.canPressMainMenu = true
+        self.mainMenu.run(fadeIn)
         
         // Si resettano le posizioni e le animazioni
         self.galleggiante.position.x = CGFloat(1120)
@@ -365,6 +485,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     private func victoryAnimation(){
         print("Animazione vittoria")
         self.fishingRod.removeAllActions()
+        self.fishingRodAttachPoint.removeAllActions()
         self.progressionBar.run(fadeOut)
         self.showFish()
         self.galleggiante.alpha = 0
@@ -377,17 +498,21 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     // Funzione che gestisce la sconfitta
     private func loseAnimation(){
         print("Animazione Sconfitta")
+        self.fishingRodAttachPoint.removeAllActions()
         self.progressionBar.run(fadeOut)
         self.resetThings()
         autolockPerdita = false
+        
     }
     
     // Funzione che gestisce la rottura lenza
     private func brokenRopeAnimation(){
         print("Animazione Rottura lenza")
+        self.fishingRodAttachPoint.removeAllActions()
         self.progressionBar.run(fadeOut)
         self.resetThings()
         autolockRotturaLenza = false
+        
     }
     
     // funzione che gestisce lo script per quando il pesce abbocca
@@ -400,6 +525,8 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         progressionBar.run(fadeIn)
         galleggiante.run(infiniteBaitingAnimation)
         fishingRod.run(pullingFishingRod)
+        // Viene eseguito il suono di baiting
+        fishingRodAttachPoint.run(baitingSound)
         fishingRodAttachPoint.position = CGPoint(x: 207.759, y: 514.982)
     }
     
@@ -410,6 +537,16 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         //Vì Viene eseguita l'animazione del lancio quando si riceve il segnale
         print("Animazine lancio")
         self.fishingRod.run(trowingFishingRod)
+        self.fishingRod.run(fishingRodCast)
+        self.setSemaferoRed = true
+        
+        // Viene segnalato che il segnale di lancio è arrivato
+        viewModel.sendMessage(key: "trowSignalRecieved", value: 1)
+        viewModel.trowSignalRecieved = 0
+        
+        // Nascondo il bottone per tornare al menù
+        self.canPressMainMenu = false
+        self.mainMenu.run(fadeOut)
     }
     
     // Funzione che mostra il pesce pescato, sia sulla canna da pesca che come trofeo
@@ -466,7 +603,6 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         pathToDraw.move(to: CGPoint(x: x, y: y))
         pathToDraw.addLine(to: galleggiante)
         yourLine.path = pathToDraw
-        print("Vittoria: \(viewModel.vittoria)")
         
         //Si setta il colore del filo sulla base della durabilità
         yourLine.strokeColor = self.colorFromValue(CGFloat(viewModel.frDurability))

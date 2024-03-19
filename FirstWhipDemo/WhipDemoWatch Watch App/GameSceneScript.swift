@@ -3,32 +3,65 @@ import SpriteKit
 import Foundation
 import SwiftUI
 
-
-
+var setSemaferoGreen = false
+var setSemaferoRed = true
 
 class GameSceneScript: SKScene, SKPhysicsContactDelegate{
     
     var autolock = true
+    var flag = true
     var viewModel: ViewModel!
     var simulation: SimulazionePesce!
+    var semafero = SKSpriteNode()
+    var fadeIn = SKAction()
+    var fadeOut = SKAction()
+    var youCanWhip = SKAction()
     
     override func sceneDidLoad() {
         // Setto il backGround a trasparente
         self.backgroundColor = UIColor.black
+        
+        // Sprite di animaizone della scritta youCanWhip
+        let canWhip1 = SKTexture(imageNamed: "canWhip1")
+        let canWhip2 = SKTexture(imageNamed: "canWhip2")
+        
+        self.semafero = childNode(withName: "youCanWhip") as! SKSpriteNode
+        self.semafero.zPosition = 20
+        self.semafero.alpha = 0
+        setSemaferoRed = true
+        
+        //Queste due azioni modificano l'alpha da 0 ad 1 e viceversa
+        fadeIn = SKAction.fadeAlpha(to: 1.0, duration: 0.5)
+        fadeOut = SKAction.fadeAlpha(to: 0, duration: 0.7)
+        
+        // Animaizoni per la scritta "You Can Whip"
+        youCanWhip = SKAction.animate(with: [canWhip1, canWhip2], timePerFrame: 0.35)
+        youCanWhip = SKAction.repeatForever(youCanWhip)
     }
     
     override func update(_ currentTime: TimeInterval) {
         
-        if viewModel.canTrow == 1 {
-            print("Reimposto la posibbilità di pescare")
-            canTrow = true
-            viewModel.canTrow = 0
-            viewModel.sendMessage(key: "canTrow", value: 0)
+        //Si imposta il semaforo al colore verde
+        if viewModel.canTrow == 1 && !setSemaferoGreen{
+            setSemaferoGreen = true
         }
         
-        //Autolocking function che esegue una sola volta la simulazione
-        //Gli verrà permesso di
-        if viewModel.inizioSimulazione == 1 && autolock {
+        // Si toglie la scritta "You Can Whip"
+        if setSemaferoRed {
+            setSemaferoRed = false
+            self.semafero.run(fadeOut)
+            Timer.scheduledTimer(withTimeInterval: 0.8, repeats: false){ _ in
+                self.semafero.run(self.fadeOut)
+            }
+        }
+        
+        // Si mostra la scritta "You Can Whip"
+        if setSemaferoGreen {
+            setSemaferoGreen = false
+            self.semafero.run(SKAction.group([fadeIn, youCanWhip]))
+        }
+        
+        if (viewModel.inizioSimulazione == 1) && autolock {
             
             print("Inizio Simulazione")
             
@@ -41,6 +74,8 @@ class GameSceneScript: SKScene, SKPhysicsContactDelegate{
             viewModel.trow = 0
             viewModel.sendMessage(key: "trow", value: 0)
             
+            // Viene segnalato all'iphone che il segnale è stato ricevuto
+            viewModel.sendMessage(key: "startSimulationRecieved", value: 1)
             
         }
         

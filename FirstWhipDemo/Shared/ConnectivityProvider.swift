@@ -13,7 +13,7 @@ class ConnectivityProvider: NSObject, WCSessionDelegate{
     
     private let session: WCSession
     private var modelUpdates: PassthroughSubject<Value, Never>
-    private var connectionEstablished: Bool = false
+    var connectionEstablished: Bool = false
     
     init(session: WCSession = .default, modelUpdates: PassthroughSubject<Value, Never>) {
         self.session = session
@@ -60,6 +60,7 @@ class ConnectivityProvider: NSObject, WCSessionDelegate{
         
         switch activationState{
         case .activated:
+            print("Connessione effettuata")
             connectionEstablished = true
         default:
             connectionEstablished = false

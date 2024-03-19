@@ -49,7 +49,7 @@ class SimulazionePesce {
         simulationTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true){ simulationTimer in
             
             //si genera una nuova vicinanza
-            let sinRand = Int.random(in: 4...5)
+            let sinRand = Int.random(in: 2...5)
             print("Ho generato il pesce numero \(sinRand)")
             //Si invalida la vicinanza precedente
             self.fish.invalidateTimer()
@@ -76,7 +76,7 @@ class SimulazionePesce {
                 self.tryToFish()
                 self.baiting = true
                 break
-                
+                   
                 default: self.baiting = false
             }
             print("La nearness vale \(self.nearness)")
@@ -100,15 +100,29 @@ class SimulazionePesce {
         
         self.baiting = false
         hapticFeedback.doVibration(timeInterval: 0.01, chooseVibration: 3, nroVibrazioni: 180)
+        previousScroll = scroll - 1
+        var contatore = 0
         
-        if previousScroll > scroll {
-            print("Pesce abbocato")
-            self.simulationTimer.invalidate()
-            self.fishing.simulaForzaPesce(timeToChange: Double(self.fishSpawned))
-            //Si invia il segnale di avvenuta pesca
-            viewModel.sendMessage(key: "Pesca", value: 1)
+        Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true){ timer in
+            
+            if previousScroll > scroll {
+                
+                timer.invalidate()
+                print("Pesce abbocato")
+                self.simulationTimer.invalidate()
+                self.fishing.simulaForzaPesce(timeToChange: Double(self.fishSpawned))
+                //Si invia il segnale di avvenuta pesca
+                self.viewModel.sendMessage(key: "Pesca", value: 1)
+                
+            }
+            
+            contatore += 1
+            if contatore > 40 {
+                timer.invalidate()
+            }
+            
         }
-
+        
     }
 
 
@@ -116,6 +130,7 @@ class SimulazionePesce {
         self.nearness = 5 - caso
         self.baiting = false
     }
+    
 }
 
 
@@ -151,6 +166,9 @@ class HapticFishing {
             
             self.timerInterno?.invalidate()
             self.observerTimer?.invalidate()
+            
+            previousScroll = 0
+            scroll = 0
             
             let strenght = Int.random(in: 0...5)
             strenghtGlobal = strenght
@@ -200,7 +218,8 @@ class HapticFishing {
         
         self.timerInterno = Timer.scheduledTimer(withTimeInterval: self.tempoIinterno, repeats: true){ timerInterno in
             self.hapticFeedback.makeVibration(chooseVibration: 3)
-            if caso == 4 || caso == 5 { self.vittoria += 2 }
+            if caso == 4 { self.vittoria += 2 }
+            if caso == 5 { self.vittoria += 4 }
             
         }
         
@@ -310,12 +329,14 @@ class HapticFishing {
             print("Hai vinto!")
             //Si resetta la variabile globale per permettere il lancio
             self.endSimulation()
+            self.hapticFeedback.makeVibration(chooseVibration: 6)
         //Caso in cui perdiamo
         } else if self.vittoria > 600 {
             condizioneVittoria = 1
             print("Hai perso!")
             //Si resetta la variabile globale per permettere il lancio
             self.endSimulation()
+            self.hapticFeedback.makeVibration(chooseVibration: 2)
         }
         
     }
@@ -329,6 +350,7 @@ class HapticFishing {
             print("Hai Rotto la lenza, esco dalla simulazione")
             //Si resetta la variabile globale per permettere il lancio
             self.endSimulation()
+            self.hapticFeedback.makeVibration(chooseVibration: 2)
         }
         
         // Viene inviata la attuale durabilità
@@ -336,7 +358,6 @@ class HapticFishing {
     }
     
     private func endSimulation(){
-        canTrow = true
         self.invalidateTimers()
     }
 }
