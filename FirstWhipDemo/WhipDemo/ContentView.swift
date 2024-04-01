@@ -7,20 +7,83 @@
 
 import SwiftUI
 import SpriteKit
-
-var mostraBarra = false
+import UserNotifications
 
 struct ContentView: View {
     
-    // !!!!!!!!! Questo una volta era State object !!!!!!!!!!
     @ObservedObject private var viewModel: ViewModel = ViewModel()
+    
+//    let savingCenter = SavingsCenter()
+//    @State var showText: Bool = false
     
     var body: some View {
         Sview(viewModel: viewModel)
             .edgesIgnoringSafeArea(.all)
+        
+
     }
     
 }
+
+//struct ContentView: View {
+//    
+//    @StateObject var notificationCenter = NotificationCenter()
+//    
+//    
+//    let savingCenter = SavingsCenter()
+//    
+//    
+//    @State var showText = false
+//  
+//    var body: some View {
+//        Button(action: {
+//            notificationCenter.sendNotification(title: "Titolo della notifica", body: "Corpo della notifica")
+//        }) {
+//            Text("Invia notifica")
+//        }
+//        .padding()
+//        
+//        Button(action: {
+//            savingCenter.saveString(dataToSave: "mission 13 vinta!!!!!", key: savingKeys.MISSION_13)
+//            savingCenter.saveBool(dataToSave: true, key: savingKeys.BOOLEAN_TEST)
+//            savingCenter.saveInteger(dataToSave: 43151, key: savingKeys.INTEGER_TEST)
+//        }, label: {
+//            Text("Salva diversi dati")
+//        })
+//        .padding()
+//        
+//        Button(action: {
+//            self.showText = true
+//        }, label: {
+//            Text("Mostra i dati salvati")
+//        })
+//        .padding()
+//        
+//        if self.showText {
+//            Text("Saved data:\n\(savingCenter.getSavedString(key: savingKeys.MISSION_13))\n\(savingCenter.getSavedInteger(key: savingKeys.INTEGER_TEST))")
+//        }
+//        
+//        if savingCenter.getSavedBool(key: savingKeys.BOOLEAN_TEST) {
+//            Text("Booleano settato a true")
+//        }
+
+//        Button(action: {
+//            savingCenter.saveIntArray(dataToSave: [18, 4521, 42, 53], key: savingCenter.INT_ARRAY_TEST)
+//            showText = true
+//        }, label: {
+//            Text("Salva e mostra dati")
+//        })
+//
+//        if showText {
+//            Text("Saved array: \(savingCenter.getSavedIntArray(key: savingCenter.INT_ARRAY_TEST)[0]), \(savingCenter.getSavedIntArray(key: savingCenter.INT_ARRAY_TEST)[1]) ,\(savingCenter.getSavedIntArray(key: savingCenter.INT_ARRAY_TEST)[2]), \(savingCenter.getSavedIntArray(key: savingCenter.INT_ARRAY_TEST)[3])")
+//        }
+//
+//    }
+//    
+//}
+
+
+
 
 
 struct Sview: View {
@@ -35,61 +98,14 @@ struct Sview: View {
         return scene
     }
     
-    var xPosition = UIScreen.main.bounds.width
-    var yPosition = UIScreen.main.bounds.height
-
     var body: some View {
+        
         ZStack{
             SpriteView(scene: scene)
-               
             
         }
-        
-        
-    }
-    
-
-}
-
-// Struttura che mostra la barra di progressione
-struct BarraPiena: View {
-   var valore: Double
-    
-    var body: some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .leading) {
-                Rectangle()
-                    .frame(width: geometry.size.width, height: geometry.size.height)
-                    .opacity(0.2)
-                    .foregroundColor(Color.blue)
-                
-                Rectangle()
-                    .frame(width: self.barraWidth(geometry: geometry), height: geometry.size.height)
-                    .foregroundColor(self.barraColor())
-                    .animation(.smooth)
-                
-            }
-        }
-    }
-    
-    private func barraWidth(geometry: GeometryProxy) -> CGFloat {
-        let width = CGFloat(600 - self.valore) / 600 * geometry.size.width
-        return width
-    }
-    
-    private func barraColor() -> Color {
-        let percentuale = self.valore / 600
-        let red = percentuale
-        let green = max(0.3, 0.77 - percentuale)
-        let blue = max(0.2, 0.7 - percentuale)
-        return Color(red: red, green: green, blue: blue)
-        
     }
 }
-
-
-
-
 
 #Preview {
     ContentView()

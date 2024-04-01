@@ -22,6 +22,7 @@ class SimulazionePesce {
     private var simulationTimer: Timer = Timer()
     private var nearness: Int = 0
     private var baiting: Bool = false
+    private var waitObserver: Bool = false
     private var fishSpawned: Int = 0
     
     init(viewModel: ViewModel){
@@ -31,93 +32,90 @@ class SimulazionePesce {
         
     }
     
-    func simulate(){
+    func simulate(type: Int, rarity: Int){
         
         self.fishSpawned = Int.random(in: 0...4)
+        
+        let pesce = Pesce(type: viewModel.typeSpawned, rarity: viewModel.choosedRarity)
+        print("Type: \(viewModel.typeSpawned).\nRarity: \(viewModel.choosedRarity).\n")
+        // Pesce.getForza() Pesce.GetTempoDiAttesa()
+        
         self.initialTimer = Timer.scheduledTimer(withTimeInterval: Double.random(in: 4...10), repeats: false){ initialTimer in
-            self.startSimulation()
+            self.startSimulation(pesce: pesce)
             self.initialTimer.invalidate()
         }
     }
     
-    private func startSimulation(){
+    private func startSimulation(pesce: Pesce){
         
         //si genera un numero randomico rappresentante il numero di iterazioni massime che il pesce può fare
-        let iterations = Int.random(in: 5...20)
+        let iterations = Int.random(in: 5...pesce.maxIteration)
         var iterationCount = 0
+        self.waitObserver = false
         
-        simulationTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true){ simulationTimer in
+        simulationTimer = Timer.scheduledTimer(withTimeInterval: Double(pesce.movementSpeed + 1), repeats: true){ simulationTimer in
             
-            //si genera una nuova vicinanza
-            let sinRand = Int.random(in: 2...5)
-            print("Ho generato il pesce numero \(sinRand)")
-            //Si invalida la vicinanza precedente
-            self.fish.invalidateTimer()
-            
-            //Si genera la nuova vicinanza sulla base della sinRand()
-            switch sinRand {
-                case 1:
-                self.setNearness(caso: 1)
-                break
+            // Se l'observer sta agendo viene impedito di effettuare nuove simulazioni
+            if !self.waitObserver {
                 
-                case 2:
-                self.setNearness(caso: 2)
-                break
-                
-                case 3: 
-                self.setNearness(caso: 3)
-                break
-                
-                case 4:
-                self.setNearness(caso: 4)
-                break
-                
-                case 5: 
-                self.tryToFish()
-                self.baiting = true
-                break
-                   
-                default: self.baiting = false
-            }
-            print("La nearness vale \(self.nearness)")
-            //Si esegue una nuova vibrazione di vicinanza sulla base
-            if !self.baiting {
-                self.fish.aboccaPesce(nearness: Double(self.nearness), fishStrenght: self.nearness)
-            }
-            //Viene aumentato il contatore di iterazione, se questo supera le iterazioni massime
-            //il timer attuale viene invalidato e viene iniziata una nuova simulazione ricorsivamente
-            iterationCount += 1
-            if iterationCount > iterations {
-                self.simulationTimer.invalidate()
+                //si genera una nuova vicinanza
+                let nearness = Int.random(in: pesce.minNearness...5)
+                //Si invalida la vicinanza precedente
                 self.fish.invalidateTimer()
-                self.simulate()
-                print("Ho fatto l'intera simulazione, ne eseguo una nuova.")
+                
+                // Se la nearness vale 5, il pesce sta mangiando l'esca e viene
+                // eseguita la simulazione ed il codice per farlo abboccare
+                if nearness == 5{
+                    self.tryToFish(pesce: pesce)
+                // Altrimenti in tutti gli altri casi si simula il battito cardiaco
+                } else {
+                    self.fish.aboccaPesce(nearness: pesce.timeBetweenHeartbit(nearness: nearness), hearthBitRate: pesce.heartbitRate)
+                }                
+                
+                //Viene aumentato il contatore di iterazione, se questo supera le iterazioni massime
+                //il timer attuale viene invalidato e viene iniziata una nuova simulazione tramite
+                //segnali dalla connectivity, l'iPhone genera un nuovo pesce e la simulazione ricomincia
+                iterationCount += 1
+                if iterationCount > iterations {
+                    self.simulationTimer.invalidate()
+                    self.fish.invalidateTimer()
+                    self.viewModel.sendMessage(key: "fishWentAway", value: 1)
+                   
+                }
             }
         }
     }
     
-    private func tryToFish(){
+//    private func setNearness(caso: Int){
+//        self.nearness = 5 - caso
+//        self.baiting = false
+//    }
+    
+    private func tryToFish(pesce: Pesce){
         
         self.baiting = false
-        hapticFeedback.doVibration(timeInterval: 0.01, chooseVibration: 3, nroVibrazioni: 180)
+        hapticFeedback.doVibration(timeInterval: 0.01, chooseVibration: 3, nroVibrazioni: pesce.eatingVibration)
         previousScroll = scroll - 1
         var contatore = 0
         
         Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true){ timer in
             
             if previousScroll > scroll {
-                
+                // Viene segnalato di non proseguire con le simulazioni
+                self.waitObserver = true
                 timer.invalidate()
                 print("Pesce abbocato")
+                
                 self.simulationTimer.invalidate()
-                self.fishing.simulaForzaPesce(timeToChange: Double(self.fishSpawned))
+                self.fishing.simulaForzaPesce(pesce: pesce)
                 //Si invia il segnale di avvenuta pesca
                 self.viewModel.sendMessage(key: "Pesca", value: 1)
                 
             }
             
             contatore += 1
-            if contatore > 40 {
+            if contatore > pesce.eatingTime {
+                self.waitObserver = false
                 timer.invalidate()
             }
             
@@ -126,10 +124,7 @@ class SimulazionePesce {
     }
 
 
-    private func setNearness(caso: Int){
-        self.nearness = 5 - caso
-        self.baiting = false
-    }
+    
     
 }
 
@@ -160,9 +155,9 @@ class HapticFishing {
         self.viewModel = viewModel
     }
     
-    func simulaForzaPesce (timeToChange: Double) {
+    func simulaForzaPesce (pesce: Pesce) {
         
-        timerEsterno = Timer.scheduledTimer(withTimeInterval: timeToChange + 1, repeats: true){ timerEsterno in
+        timerEsterno = Timer.scheduledTimer(withTimeInterval: Double(pesce.movementSpeed + 1), repeats: true){ timerEsterno in
             
             self.timerInterno?.invalidate()
             self.observerTimer?.invalidate()
@@ -170,39 +165,39 @@ class HapticFishing {
             previousScroll = 0
             scroll = 0
             
-            let strenght = Int.random(in: 0...5)
+            let strenght = Int.random(in: pesce.minStrenght...pesce.maxStrenght)
             strenghtGlobal = strenght
             
             switch strenght {
                 
             case 0:
                 self.tempoIinterno = 1.0
-                self.getRope(caso: 0)
+                self.getRope(caso: 0, pesce: pesce)
                 break
                 
             case 1:
                 self.tempoIinterno = 0.8
-                self.getRope(caso: 1)
+                self.getRope(caso: 1, pesce: pesce)
                 break
                 
             case 2:
                 self.tempoIinterno = 0.6
-                self.getRope(caso: 2)
+                self.getRope(caso: 2, pesce: pesce)
                 break
                 
             case 3:
                 self.tempoIinterno = 0.4
-                self.getRope(caso: 3)
+                self.getRope(caso: 3, pesce: pesce)
                 break
                 
             case 4:
                 self.tempoIinterno = 0.2
-                self.getRope(caso: 4)
+                self.getRope(caso: 4, pesce: pesce)
                 break
                 
             case 5:
                 self.tempoIinterno = 0.1
-                self.getRope(caso: 5)
+                self.getRope(caso: 5, pesce: pesce)
                 break
                 
                 
@@ -214,37 +209,24 @@ class HapticFishing {
         }
     }
     
-    private func getRope(caso: Int){
+    private func getRope(caso: Int, pesce: Pesce){
         
         self.timerInterno = Timer.scheduledTimer(withTimeInterval: self.tempoIinterno, repeats: true){ timerInterno in
             self.hapticFeedback.makeVibration(chooseVibration: 3)
-            if caso == 4 { self.vittoria += 2 }
-            if caso == 5 { self.vittoria += 4 }
+            if caso == 4 { self.vittoria += pesce.decreaseRopeLight }
+            if caso == 5 { self.vittoria += pesce.decreaseRopeHeavy }
             
         }
         
         self.observerTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true){ observerTimer in
             
-            switch caso {
-            case 0, 1 :
-                self.manageCases(caso: caso)
-                break
-            case 2, 3 :
-                self.manageCases(caso: caso)
-                break
-            case 4, 5 :
-                self.manageCases(caso: caso)
-                break
-            default:
-                print("Default case")
-                break
-                
-            }
+            self.manageCases(caso: caso, pesce: pesce)
+            
         }
     }
     
     //Funzione che gestisce i casi di scroll
-    private func manageCases(caso: Int){
+    private func manageCases(caso: Int, pesce: Pesce){
         
         //Se sto lasciando la lenza gestiscodi conseguenza
         if previousScroll < scroll {
@@ -253,18 +235,18 @@ class HapticFishing {
             // In base al caso andiamo ad allontanare la vittoria
             switch caso {
             case 0, 1 :
-                print("Caso 0 1 aumento di 2: \(vittoria)")
-                self.vittoria += 2
+                print("Caso 0 1 aumento di \(pesce.takeRopeLight): \(vittoria)")
+                self.vittoria += pesce.takeRopeLight
                 break
                 
             case 2, 3 :
-                print("Caso 2 3 aumento di 4: \(vittoria)")
-                self.vittoria += 4
+                print("Caso 2 3 aumento di \(pesce.takeRopeLight): \(vittoria)")
+                self.vittoria += pesce.takeRopeMedium
                 break
                 
             case 4, 5 :
-                print("Caso 4 5 aumento di 2: \(vittoria)")
-                self.vittoria += 6
+                print("Caso 4 5 aumento di \(pesce.takeRopeLight): \(vittoria)")
+                self.vittoria += pesce.takeRopeHeavy
                 break
                 
             default:
@@ -280,19 +262,19 @@ class HapticFishing {
             // In base al caso gestiamo l'avicinamento al punto di vittoria
             switch caso {
             case 0, 1 :
-                print("Caso 0 1 diminuisco di 10: \(vittoria)")
-                self.vittoria -= 10
+                print("Caso 0 1 diminuisco di \(pesce.loseRopeHigh): \(vittoria)")
+                self.vittoria -= pesce.loseRopeHigh
                 break
                 
             case 2, 3 :
-                print("Caso 2 3 siminuisco di 4: \(vittoria)")
-                self.vittoria -= 4
+                print("Caso 2 3 siminuisco di \(pesce.loseRopeHigh): \(vittoria)")
+                self.vittoria -= pesce.loseRopeMedium
                 break
                 
             case 4, 5 :
-                print("Caso 4 5 siminuisco di 1: \(vittoria)")
-                self.vittoria -= 1
-                self.changeFRDurability()
+                print("Caso 4 5 siminuisco di \(pesce.loseRopeHigh): \(vittoria)")
+                self.vittoria -= pesce.loseRopeLight
+                self.changeFRDurability(caso: caso, pesce: pesce)
                 break
                 
             default:
@@ -310,7 +292,6 @@ class HapticFishing {
         self.checkVittoria()
         
     }
-    
     
     func invalidateTimers(){
         self.timerEsterno?.invalidate()
@@ -341,10 +322,17 @@ class HapticFishing {
         
     }
     
-    private func changeFRDurability(){
+    private func changeFRDurability(caso: Int, pesce: Pesce){
         
-        self.fihsingRodDurability -= 3
-        print("Diminuisco la durabilità della lenza: \(self.fihsingRodDurability)")
+        // Viene diminuita di uno la rottura lenza dle pesce se non sta tirando al massimo
+        var amount = 0
+        if caso == 4 {
+            amount = pesce.fishingRodBreakingSpeed - 1
+        }
+        
+        print("Diminuisco la durab. della lenza di \(pesce.fishingRodBreakingSpeed): \(self.fihsingRodDurability)")
+        self.fihsingRodDurability -= amount
+        
         if self.fihsingRodDurability <= 0 {
             condizioneVittoria = 2
             print("Hai Rotto la lenza, esco dalla simulazione")

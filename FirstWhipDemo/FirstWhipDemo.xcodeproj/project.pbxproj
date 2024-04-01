@@ -12,7 +12,14 @@
 		D81B08DA2BA9F0C000658D07 /* frCast.wav in Resources */ = {isa = PBXBuildFile; fileRef = D81B08D92BA9F0C000658D07 /* frCast.wav */; };
 		D81B08DC2BA9F31900658D07 /* baitLandins.wav in Resources */ = {isa = PBXBuildFile; fileRef = D81B08DB2BA9F31900658D07 /* baitLandins.wav */; };
 		D81B08DE2BA9F62300658D07 /* buttonClick.wav in Resources */ = {isa = PBXBuildFile; fileRef = D81B08DD2BA9F62300658D07 /* buttonClick.wav */; };
+		D86FBD942BB8640600CF8D37 /* DPRNG.swift in Sources */ = {isa = PBXBuildFile; fileRef = D86FBD932BB8640600CF8D37 /* DPRNG.swift */; };
 		D89837042BA5DFC800EB44CE /* Lenza_lenta.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D89837032BA5DFC800EB44CE /* Lenza_lenta.mp3 */; };
+		D8B53DFD2BB5EF62007B7B4E /* NotificationCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8B53DFC2BB5EF62007B7B4E /* NotificationCenter.swift */; };
+		D8B53DFF2BB6029A007B7B4E /* SavingsCenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8B53DFE2BB6029A007B7B4E /* SavingsCenter.swift */; };
+		D8B53E012BB74EBA007B7B4E /* TableGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8B53E002BB74EBA007B7B4E /* TableGenerator.swift */; };
+		D8D2E7572BB9DBB20098F7F7 /* Fish.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D2E7562BB9DBB20098F7F7 /* Fish.swift */; };
+		D8D2E7592BB9F3B20098F7F7 /* FishCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8D2E7582BB9F3B20098F7F7 /* FishCollection.swift */; };
+		D8EFFAA72BB8AF16004B9FAB /* Pesce.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8EFFAA62BB8AF16004B9FAB /* Pesce.swift */; };
 		D8F654CB2B9EF42A00ADEA9D /* WhipDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F654CA2B9EF42A00ADEA9D /* WhipDemoApp.swift */; };
 		D8F654CD2B9EF42A00ADEA9D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8F654CC2B9EF42A00ADEA9D /* ContentView.swift */; };
 		D8F654CF2B9EF42C00ADEA9D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D8F654CE2B9EF42C00ADEA9D /* Assets.xcassets */; };
@@ -64,6 +71,7 @@
 		D81B08D92BA9F0C000658D07 /* frCast.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = frCast.wav; sourceTree = "<group>"; };
 		D81B08DB2BA9F31900658D07 /* baitLandins.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = baitLandins.wav; sourceTree = "<group>"; };
 		D81B08DD2BA9F62300658D07 /* buttonClick.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = buttonClick.wav; sourceTree = "<group>"; };
+		D86FBD932BB8640600CF8D37 /* DPRNG.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DPRNG.swift; sourceTree = "<group>"; };
 		D871A8A82B8E74A3004C5C26 /* VibrationsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibrationsApp.swift; sourceTree = "<group>"; };
 		D871A8AA2B8E74A3004C5C26 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D871A8B82B8E74DE004C5C26 /* HapticFeedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedback.swift; sourceTree = "<group>"; };
@@ -71,6 +79,12 @@
 		D8778DE62B976AA100E59A56 /* GameSceneScript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSceneScript.swift; sourceTree = "<group>"; };
 		D8836BFA2B98919A00AB22AF /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		D89837032BA5DFC800EB44CE /* Lenza_lenta.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Lenza_lenta.mp3; sourceTree = "<group>"; };
+		D8B53DFC2BB5EF62007B7B4E /* NotificationCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCenter.swift; sourceTree = "<group>"; };
+		D8B53DFE2BB6029A007B7B4E /* SavingsCenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavingsCenter.swift; sourceTree = "<group>"; };
+		D8B53E002BB74EBA007B7B4E /* TableGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableGenerator.swift; sourceTree = "<group>"; };
+		D8D2E7562BB9DBB20098F7F7 /* Fish.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fish.swift; sourceTree = "<group>"; };
+		D8D2E7582BB9F3B20098F7F7 /* FishCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FishCollection.swift; sourceTree = "<group>"; };
+		D8EFFAA62BB8AF16004B9FAB /* Pesce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pesce.swift; sourceTree = "<group>"; };
 		D8F654C82B9EF42A00ADEA9D /* WhipDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WhipDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D8F654CA2B9EF42A00ADEA9D /* WhipDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhipDemoApp.swift; sourceTree = "<group>"; };
 		D8F654CC2B9EF42A00ADEA9D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -122,6 +136,35 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		D8D2E7532BB9DAB70098F7F7 /* ManagingCenters */ = {
+			isa = PBXGroup;
+			children = (
+				D8B53DFE2BB6029A007B7B4E /* SavingsCenter.swift */,
+				D8B53DFC2BB5EF62007B7B4E /* NotificationCenter.swift */,
+			);
+			path = ManagingCenters;
+			sourceTree = "<group>";
+		};
+		D8D2E7542BB9DAD20098F7F7 /* TableGenerator */ = {
+			isa = PBXGroup;
+			children = (
+				D86FBD932BB8640600CF8D37 /* DPRNG.swift */,
+				D8B53E002BB74EBA007B7B4E /* TableGenerator.swift */,
+			);
+			path = TableGenerator;
+			sourceTree = "<group>";
+		};
+		D8D2E7552BB9DAED0098F7F7 /* GameSceneFiles */ = {
+			isa = PBXGroup;
+			children = (
+				D8F654FC2B9EFF7B00ADEA9D /* SKScriptIphone.swift */,
+				D8F654FA2B9EFF5100ADEA9D /* GameSceneIphone.sks */,
+				D8D2E7562BB9DBB20098F7F7 /* Fish.swift */,
+				D8D2E7582BB9F3B20098F7F7 /* FishCollection.swift */,
+			);
+			path = GameSceneFiles;
+			sourceTree = "<group>";
+		};
 		D8F654C32B9EF37D00ADEA9D /* Shared */ = {
 			isa = PBXGroup;
 			children = (
@@ -134,10 +177,11 @@
 		D8F654C92B9EF42A00ADEA9D /* WhipDemo */ = {
 			isa = PBXGroup;
 			children = (
+				D8D2E7552BB9DAED0098F7F7 /* GameSceneFiles */,
+				D8D2E7542BB9DAD20098F7F7 /* TableGenerator */,
+				D8D2E7532BB9DAB70098F7F7 /* ManagingCenters */,
 				D8F654CA2B9EF42A00ADEA9D /* WhipDemoApp.swift */,
 				D8F654CC2B9EF42A00ADEA9D /* ContentView.swift */,
-				D8F654FA2B9EFF5100ADEA9D /* GameSceneIphone.sks */,
-				D8F654FC2B9EFF7B00ADEA9D /* SKScriptIphone.swift */,
 				D81B08D52BA9E7D300658D07 /* ambience.wav */,
 				D81B08D72BA9EA6900658D07 /* baitingSound.wav */,
 				D81B08D92BA9F0C000658D07 /* frCast.wav */,
@@ -160,6 +204,7 @@
 		D8F654DB2B9EF45F00ADEA9D /* WhipDemoWatch Watch App */ = {
 			isa = PBXGroup;
 			children = (
+				D8EFFAA62BB8AF16004B9FAB /* Pesce.swift */,
 				D8778DE42B972D4300E59A56 /* SimulazionePesce.swift */,
 				D8778DE62B976AA100E59A56 /* GameSceneScript.swift */,
 				D871A8A82B8E74A3004C5C26 /* VibrationsApp.swift */,
@@ -293,9 +338,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				D8F654CD2B9EF42A00ADEA9D /* ContentView.swift in Sources */,
+				D8B53DFF2BB6029A007B7B4E /* SavingsCenter.swift in Sources */,
+				D86FBD942BB8640600CF8D37 /* DPRNG.swift in Sources */,
+				D8B53DFD2BB5EF62007B7B4E /* NotificationCenter.swift in Sources */,
 				D8F654F52B9EF55C00ADEA9D /* ViewModel.swift in Sources */,
+				D8D2E7572BB9DBB20098F7F7 /* Fish.swift in Sources */,
 				D8F654FD2B9EFF7B00ADEA9D /* SKScriptIphone.swift in Sources */,
+				D8D2E7592BB9F3B20098F7F7 /* FishCollection.swift in Sources */,
 				D8F654CB2B9EF42A00ADEA9D /* WhipDemoApp.swift in Sources */,
+				D8B53E012BB74EBA007B7B4E /* TableGenerator.swift in Sources */,
 				D8F654F82B9EF58F00ADEA9D /* ConnectivityProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -310,6 +361,7 @@
 				D8F654F12B9EF4BD00ADEA9D /* VibrationsApp.swift in Sources */,
 				D8F654F32B9EF4C500ADEA9D /* SimulazionePesce.swift in Sources */,
 				D8F654F62B9EF55C00ADEA9D /* ViewModel.swift in Sources */,
+				D8EFFAA72BB8AF16004B9FAB /* Pesce.swift in Sources */,
 				D8F654EE2B9EF4AB00ADEA9D /* HapticFeedback.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -45,6 +45,7 @@ struct ContentView: View {
     
     @State private var levelAngle: Double = 0.0
     @State private var force: Double?
+    
     let minAngle: Double = 0.0
     let maxAngle: Double = 100000
     let maxRotationSpeed: Double = 20.0
@@ -60,19 +61,7 @@ struct ContentView: View {
     @State private var maxAcceleration: Double = 0.0
     @State private var gyroData: CMGyroData?
     let motionManager = CMMotionManager()
-    
-    // Dichiarazione dell'istanza AVAudioPlayer
-    let audioPlayer: AVAudioPlayer? = {
-        guard let url = Bundle.main.url(forResource: "Lenza_lenta", withExtension: "mp3") else { return nil }
         
-        let player = try? AVAudioPlayer(contentsOf: url)
-        player?.enableRate = true
-        player?.volume = 10.0 // Imposta il volume al massimo
-        player?.numberOfLoops = -1 // Loop infinito
-        return player
-        
-    }()
-    
     @StateObject private var viewModel: ViewModel = ViewModel()
 
     var body: some View {
@@ -141,6 +130,7 @@ struct ContentView: View {
             motionManager.startGyroUpdates(to: .main) { (data, error) in
                 guard let gyroData = data else { return }
                 self.gyroData = gyroData
+                
             }
         }
     }
@@ -163,39 +153,19 @@ struct ContentView: View {
                 let speed = min(magnitude / maxAcceleration * 1000, 2000)
             
                 currentValue = speed
-                if currentValue > maxAcceleration {
-                    self.maxAcceleration = currentValue
-                }
-
+                
+//                if currentValue > maxAcceleration {
+//                    self.maxAcceleration = currentValue
+//                }
+                
                 // Se il lancio è permesso e la forza è abbastanza elevata, viene segnalato
                 // che il lancio è estato eseguito, andando a disattivare il lock a questo blocco
                 // di codice per impedirne le future esecuzioni fin quando la flag non viene
                 // resettata durante la fine della simulazione
-                if viewModel.canTrow == 1 && currentValue > 1500 && deltaY > -0.50{
+                if viewModel.canTrow == 1 && currentValue > 1500 && deltaY > -0.50 && deltaZ < -1{
                     
-                    print("Hai eseguito un lancio")
-                    viewModel.canTrow = 0
-                    currentValue = 0
-                    setSemaferoRed = true
-                    print("Provo ad inviare i segnali di lancio")
-                    viewModel.sendMessage(key: "trow", value: 1)
-                    viewModel.maxAcceleration = 0
-                    
-                    // Si prelaziona un tempo alla fine del quale se il segnale non è stato ricevuto
-                    // Viene reimpostata la possibilità di lanciare
-                    Timer.scheduledTimer(withTimeInterval: 3, repeats: false){ _ in
-                        // Controllo per osservare se l'iphone ha ricevuto il segnale
-                        if viewModel.trowSignalRecieved == 0 {
-                            // Se il segnale non è arrivato, viene reimpostata la possibilitò di pescare
-                            viewModel.canTrow = 1
-                            setSemaferoGreen = true
-                            
-                        // Altrimenti il segnale è arrivato correttamente e viene resettato localmente
-                        } else {
-                            viewModel.trowSignalRecieved = 0
-                            viewModel.sendMessage(key: "trow", value: 0)
-                        }
-                    }
+                    // La funzione che gestisce la logica di lancio
+                    self.handleTrow()
                     
                 }
             }
@@ -203,7 +173,81 @@ struct ContentView: View {
             self.previousAcceleration = acceleration
             
         }
+        
+        
+        // Blocco che gestisce se si può tirare indietro il braccio
+//        if !viewModel.canTrowBack {
+//            
+//            
+//            currentValue = 0
+//            
+//            
+//            
+//            if let previousAcceleration = self.previousAcceleration {
+//                let deltaX = acceleration.x - previousAcceleration.x
+//                let deltaY = acceleration.y - previousAcceleration.y
+//                let deltaZ = acceleration.z - previousAcceleration.z
+//                let magnitude = sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ)
+//                
+//                let maxAcceleration: Double = 2.0
+//                let speed = min(magnitude / maxAcceleration * 1000, 2000)
+//                
+//                currentValue = speed
+//                
+//                print("Direzione calcolata: \(atan2(deltaY, deltaX))\n")
+//                if currentValue > 1000 && deltaY > 0.5 && atan2(deltaY, deltaX) < -1 {
+//                    
+//                    // La funzione che gestisce la logica di tiro indietro del braccio
+//                    print("Direzione calcolata in TrowBack:\(atan2(deltaY, deltaX))\n")
+//                    currentValue = 0
+//                    viewModel.canTrowBack = true
+//                    
+//                    viewModel.canTrow = 1
+//                    
+//                    Timer.scheduledTimer(withTimeInterval: 3, repeats: false){ _ in
+//                        viewModel.canTrowBack = false
+//                    }
+//                    
+//                }
+//            }
+//
+//            self.previousAcceleration = acceleration
+//        }
 
+    }
+    
+    // La funzione che gestisce il segnale di lancio della canna
+    private func handleTrow(){
+        
+        // print("Hai eseguito un lancio")
+        viewModel.canTrow = 0
+        currentValue = 0
+        setSemaferoRed = true
+        // print("Provo ad inviare i segnali di lancio")
+        viewModel.sendMessage(key: "trow", value: 1)
+        viewModel.maxAcceleration = 0
+        
+        // Vengono gestiti gli ack
+        self.handleHacknowledgement()
+    }
+    
+    // Gestione dell'ack per il lancio
+    private func handleHacknowledgement(){
+        // Si prelaziona un tempo alla fine del quale se il segnale non è stato ricevuto
+        // Viene reimpostata la possibilità di lanciare
+        Timer.scheduledTimer(withTimeInterval: 3, repeats: false){ _ in
+            // Controllo per osservare se l'iphone ha ricevuto il segnale
+            if viewModel.trowSignalRecieved == 0 {
+                // Se il segnale non è arrivato, viene reimpostata la possibilitò di pescare
+                viewModel.canTrow = 1
+                setSemaferoGreen = true
+                
+            // Altrimenti il segnale è arrivato correttamente e viene resettato localmente
+            } else {
+                viewModel.trowSignalRecieved = 0
+                viewModel.sendMessage(key: "trow", value: 0)
+            }
+        }
     }
     
     private func calculateForce(leverAngle: Double) -> Double {
