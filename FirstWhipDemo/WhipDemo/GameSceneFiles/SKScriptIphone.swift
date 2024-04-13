@@ -536,7 +536,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         }
         
         // viene ritornata la rarità così generata
-        return 3
+        return choosedRarity
     }
     
     //La funzione che restituisce un intero rappresentante uno dei pesci disponibili in giornata
