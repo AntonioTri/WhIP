@@ -47,10 +47,11 @@ class Fish{
     
     private func animate(){
         
+        print(self.rarityTrophy.size)
         // Viene dichiarata l'azione che lo fa muovere in alto verso il centro
-        let moveUpAction1 = SKAction.moveTo(y: 320, duration: 1.5)
+        let moveUpAction1 = SKAction.moveTo(y: 350, duration: 1.5)
         // Viene dichiarata l'azione che lo fa muovere verso l'alto dal centro
-        let moveUpAction2 = SKAction.moveTo(y: 1100, duration: 1.2)
+        let moveUpAction2 = SKAction.moveTo(y: 1400, duration: 1.2)
         // Si crea la sequenza di animazioni
         let sequence = SKAction.sequence([moveUpAction1, SKAction.wait(forDuration: 2), moveUpAction2])
         // Si esegue la sequenza
@@ -70,23 +71,43 @@ class Fish{
     private func setTexturesAndAnimation(){
         
         // Texture per il trofeo
-        // QUI CI VA L'ALGORITMO PER SCEGLIERE LE TEXTURE ED IL TROFEO SULLA BASE DELLE RARITA' E TIPOLOGIE
-        let trophyTexture = SKTexture(imageNamed: "fish11")
+        let trophyTexture = getTrophyTexture()
         self.rarityTrophy.texture = trophyTexture
         
         // Texture per il pesce
-        // QUI CI VA L'ALGORITMO PER SCEGLIERE LE TEXTURE ED IL TROFEO SULLA BASE DELLE RARITA' E TIPOLOGIE
-        let fishTexture1 = SKTexture(imageNamed: "fish21")
-        let fishTexture2 = SKTexture(imageNamed: "fish22")
+        let fishTexture1 = SKTexture(imageNamed: String("fish-\(self.typeSpawned!)-1"))
+        print(fishTexture1)
+        let fishTexture2 = SKTexture(imageNamed: String("fish-\(self.typeSpawned!)-1"))
+        
+        // settiamo lo stato iniziale
         self.fish.texture = fishTexture1
+        self.fish.zPosition = self.rarityTrophy.zPosition + 1
         self.resetTrophyPosition()
         
         // Animazione infinita del pesce
-        // QUI CI VA L'ALGORITMO PER SCEGLIERE LE TEXTURE ED IL TROFEO SULLA BASE DELLE RARITA' E TIPOLOGIE
         let fishAnimSeuquence = SKAction.animate(with: [fishTexture1, fishTexture2], timePerFrame: 0.3)
         animatefish = SKAction.repeatForever(fishAnimSeuquence)
         
         
+    }
+    
+    // Questa funzione sceglie lo sfondo del trofeo dinamicamente in base alla rarità
+    private func getTrophyTexture() -> SKTexture {
+        
+        switch self.raritySpawned {
+        case 0:
+            return SKTexture(imageNamed: "commonTrophy")
+        case 1:
+            return SKTexture(imageNamed: "rareTrophy")
+        case 2:
+            return SKTexture(imageNamed: "epicTrophy")
+        case 3:
+            return SKTexture(imageNamed: "legendaryTrophy")
+        default:
+            print("Error choosing trophy")
+            return SKTexture()
+        }
+
     }
     
     // Questa funzione sulla base del tipo spawnato indicizza la pagina del catalogoz di appartenenza
@@ -105,9 +126,9 @@ class Fish{
     }
     
     private func resetTrophyPosition(){
-        self.rarityTrophy.size = CGSize(width: 1231, height: 1162)
+        self.rarityTrophy.size = CGSize(width: 850, height: 800)
         self.rarityTrophy.position = CGPoint(x: 0, y: -800)
-        self.fish.size = CGSize(width: 380, height: 1162)
+        self.fish.size = CGSize(width: 320, height: 850)
         self.fish.removeAllActions()
     }
     

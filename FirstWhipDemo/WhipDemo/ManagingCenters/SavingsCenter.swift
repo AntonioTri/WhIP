@@ -19,11 +19,10 @@ class SavingsCenter {
     // Queste sono tutte le chiavi che identificano i dati salvati nel
     // Database interno
     public let FIRST_GAMEPLAY_EVER = "FGE"
+    public let COMMON_FISH_SHOWED_UP = "ComonFishShowedUp"
     public let NOTIFICATION_HOUR = "notifichescionHour"
-    public let STRING_TEST = "StringTest"
-    public let BOOLEAN_TEST = "BooleanTest"
-    public let INTEGER_TEST = "IntegerTest"
-    public let INT_ARRAY_TEST = "IntegerArrayTest"
+    public let GUI_HOUR_SAVED = "GuiHourSaved"
+    public let SKSCRIPT_HOUR_SAVED = "SKScriptHourSaved"
     public let TABLE_GENERATED = "TableGenerated"
     public let SEED_GENERATED = "SeedGenerated"
     public let CURRENT_SEED = "CurrentSeed"

@@ -92,9 +92,9 @@ struct DPRNG {
         let calendar = Calendar.current
         let date = Date()
         
-        var currentHour = calendar.component(.hour, from: date)
-        var currentDay = calendar.component(.day, from: date)
-        var currentMonth = calendar.component(.month, from: date)
+        let currentHour = calendar.component(.hour, from: date)
+        let currentDay = calendar.component(.day, from: date)
+        let currentMonth = calendar.component(.month, from: date)
         
         var nextHour = 0
         var nextDay = 0

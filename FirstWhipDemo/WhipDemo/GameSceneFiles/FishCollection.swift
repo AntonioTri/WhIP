@@ -45,17 +45,24 @@ class FishCollection{
         // Estraiamo dalla scena
         let touchedNode = scene.atPoint(position) as? SKSpriteNode
         let menu = scene.childNode(withName: "Menu") as! SKSpriteNode
+        let trophies = menu.childNode(withName: "Trophies") as! SKSpriteNode
         
         // Se si sta toccando il menu (o il bottone "collection" da inserire)
         // si fanno scorrere i due protagonisti, collezione e menu per mostrare la collezione
-        if touchedNode == menu {
+        if touchedNode == trophies {
             
+            // Si carica nella scena il nodo della collezione
+            trophies.run(SKAction.playSoundFileNamed("buttonClick", waitForCompletion: true))
+            self.scene.addChild(collectionNode)
             menu.run(SKAction.group([SKAction.moveTo(x: 1600, duration: 0.8), fadeOut]))
             collectionNode.run(SKAction.group([SKAction.moveTo(x: 0, duration: 0.8), fadeIn]))
             
         // Nel caso si stia toccando il bottone per vedere i trofei, si gestisce la situazione in base ai casi
         } else if touchedNode == inGameCB && self.canPressCollectionButton {
             
+            // Si carica nella scena il nodo della collezione
+            self.inGameCB.run(SKAction.playSoundFileNamed("buttonClick", waitForCompletion: true))
+            self.scene.addChild(collectionNode)
             self.scene.hideGamingScene()
             self.hideCollectionButton()
             self.inGameCB.run(fadeOut)
@@ -65,6 +72,7 @@ class FishCollection{
         // Si ritorna al menu
         }else if touchedNode == BACKButton {
             
+            self.BACKButton.run(SKAction.playSoundFileNamed("buttonClick", waitForCompletion: true))
             self.turnBackToPreviousState()
             
         // ALtrimenti se si sta toccando l'UPButton, vengono eseguite delle operazioni
@@ -73,6 +81,7 @@ class FishCollection{
         // Determinate pagine
         } else if touchedNode == UPButton && showPreviousPageButton {
             
+            self.UPButton.run(SKAction.playSoundFileNamed("buttonClick", waitForCompletion: true))
             self.currentPageNumber -= 1
             self.catalog[currentPageNumber].alpha = 1
             self.catalog[currentPageNumber].zPosition = 10
@@ -85,7 +94,8 @@ class FishCollection{
             
         // Lo stesso viene fatto per il DOWN Button
         } else if touchedNode == DOWNButton && showNextPageButton {
-
+            
+            self.DOWNButton.run(SKAction.playSoundFileNamed("buttonClick", waitForCompletion: true))
             self.currentPageNumber += 1
             self.catalog[currentPageNumber].alpha = 1
             self.catalog[currentPageNumber].zPosition = 10
@@ -97,16 +107,6 @@ class FishCollection{
             self.updateInternalPageState()
             
         }
-        
-        // Test per osservare i dati dei nodi cliccati
-        
-//        print("\n----DOPO I CONTROLLI----\n")
-//        print(touchedNode!)
-//        print("\n-----DOWNBUTTON:\n\(DOWNButton)\n")
-//        print("-----UPBUTTON:\n\(UPButton)\n")
-//        
-//        print("UPButton name: \(UPButton.name ?? "ERROR"), state: \(showPreviousPageButton)")
-//        print("NEXTButton name: \(DOWNButton.name ?? "ERROR"), state: \(showNextPageButton)\n\n")
         
     }
     
@@ -153,14 +153,18 @@ class FishCollection{
                 // Se all'interno del database il suo valore è salvato come booleano allora viene mostrata
                 // L'immagine del trofeo corrispondente
                 if savingCenter.getSavedBool(key: currentName) {
-                    currentTrophy.texture = SKTexture(imageNamed: "fish11")
+                    currentTrophy.texture = SKTexture(imageNamed: currentName)
+                    
                     // Altrimenti viene mostrato uno spot vuoto
                 } else {
-                    currentTrophy.texture = SKTexture(imageNamed: "fish22")
+                    currentTrophy.texture = SKTexture(imageNamed: "emptyTrophy")
                 }
+                
+                currentTrophy.size = CGSize(width: 110, height: 143)
             }
         }
     }
+    
     
     // Quando richiamata questa funzione imposta delle flag per mostrare o nascondere
     // I bottoni di scorrimento pagina in base alla pagina corrente
@@ -211,17 +215,24 @@ class FishCollection{
     // viene mostrata la giusta scena precendente
     private func turnBackToPreviousState(){
         
+        let removeCollectionFromScene = SKAction.run {
+            self.collectionNode.removeFromParent()
+        }
+        
+        let removeSequence = SKAction.sequence([SKAction.group([SKAction.moveTo(x: -1600, duration: 0.8), fadeOut]), removeCollectionFromScene])
+        
         if scene.getCurrentState() == 0{
             
             self.scene.menu.run(SKAction.group([SKAction.moveTo(x: 0, duration: 0.8), fadeIn]))
-            self.collectionNode.run(SKAction.group([SKAction.moveTo(x: -1600, duration: 0.8), fadeOut]))
+            self.collectionNode.run(removeSequence)
             
         } else if scene.getCurrentState() == 1{
             
             self.scene.showGamingScene()
-            self.collectionNode.run(SKAction.group([SKAction.moveTo(x: -1600, duration: 0.8), fadeOut]))
+            self.collectionNode.run(removeSequence)
             
         }
+        
         
     }
     
@@ -252,6 +263,9 @@ class FishCollection{
         self.DOWNButton = collectionNode.childNode(withName: "DOWNButton") as! SKSpriteNode
         self.BACKButton = collectionNode.childNode(withName: "BACKButton") as! SKSpriteNode
         self.inGameCB = scene.childNode(withName: "showCollection") as! SKSpriteNode
+        
+        // Si torlgie dalla scena il nodo della collezione, per rendere il tutto più efficiente
+        self.collectionNode.removeFromParent()
         
     }
     

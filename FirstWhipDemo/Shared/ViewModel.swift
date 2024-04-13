@@ -5,6 +5,7 @@
 //  Created by Antonio Tridente on 11/03/24.
 //
 
+//SKAction.playSoundFileNamed("buttonClick", waitForCompletion: true)
 
 import Foundation
 import Combine
@@ -29,15 +30,16 @@ class ViewModel: ObservableObject{
     @Published var deltaZ: Int = 0
     
     @Published var trow: Int = 0
-    @Published var trowingBack: Int = 0
-    @Published var canTrowBack: Bool = false
     
     @Published var avanti: Int = 0
     @Published var fineSimulazione: Int = -1
     @Published var inizioSimulazione: Int = -1
     @Published var canTrow: Int = 0
+    @Published var canTrowSecondSignal: Int = 1
     @Published var vittoria: Int = 0
+    
     @Published var pesca: Int = 0
+    @Published var pescaRecieved: Int = 0
     @Published var frDurability: Int = 100
     
     @Published var connected: Bool = false
@@ -49,6 +51,8 @@ class ViewModel: ObservableObject{
     
     @Published var typeSpawned = -1
     @Published var choosedRarity = -1
+    
+    @Published var canSpawnPopup = 0
     
     
     var valueModel: PassthroughSubject<Value, Never> = PassthroughSubject<Value, Never>()
@@ -75,11 +79,11 @@ class ViewModel: ObservableObject{
                 
             case "trow":
                 self.trow = value.value
-            case "trowingBack":
-                self.trowingBack = value.value
                 
             case "canTrow":
                 self.canTrow = value.value
+            case "canTrowSecondSignal":
+                self.canTrowSecondSignal = value.value
             case "maxAcceleration":
                 self.maxAcceleration = value.value
             case "Avanti":
@@ -92,8 +96,10 @@ class ViewModel: ObservableObject{
                 self.vittoria = value.value
             case "Pesca":
                 self.pesca = value.value
-            case "frDurability":
+            case "pescaRecieved":
+                self.pescaRecieved = value.value
                 
+            case "frDurability":
                 self.frDurability = value.value
             case "trowSignalRecieved":
                 self.trowSignalRecieved = value.value
@@ -106,6 +112,9 @@ class ViewModel: ObservableObject{
                 self.typeSpawned = value.value
             case "ChoosedRarity":
                 self.choosedRarity = value.value
+                
+            case "canSpawnPopup":
+                self.canSpawnPopup = value.value
                 
             default:
                 print("Error. Path = \(value.path). Value = \(value.value)")

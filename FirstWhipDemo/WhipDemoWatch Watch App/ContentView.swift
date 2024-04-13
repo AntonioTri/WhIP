@@ -50,9 +50,6 @@ struct ContentView: View {
     let maxAngle: Double = 100000
     let maxRotationSpeed: Double = 20.0
     
-    private var hapticFeedback: HapticFeedback = HapticFeedback()
-    private var fishes: HapticFish = HapticFish()
-    
     @State var deltaZ: Double = 0.0
     @State var deltaX: Double = 0.0
     @State private var isThrowing = false
@@ -153,16 +150,12 @@ struct ContentView: View {
                 let speed = min(magnitude / maxAcceleration * 1000, 2000)
             
                 currentValue = speed
-                
-//                if currentValue > maxAcceleration {
-//                    self.maxAcceleration = currentValue
-//                }
-                
+
                 // Se il lancio è permesso e la forza è abbastanza elevata, viene segnalato
                 // che il lancio è estato eseguito, andando a disattivare il lock a questo blocco
                 // di codice per impedirne le future esecuzioni fin quando la flag non viene
                 // resettata durante la fine della simulazione
-                if viewModel.canTrow == 1 && currentValue > 1500 && deltaY > -0.50 && deltaZ < -1{
+                if viewModel.canTrow == 1 && currentValue > 1300 && deltaY > -0.50{
                     
                     // La funzione che gestisce la logica di lancio
                     self.handleTrow()
@@ -173,46 +166,6 @@ struct ContentView: View {
             self.previousAcceleration = acceleration
             
         }
-        
-        
-        // Blocco che gestisce se si può tirare indietro il braccio
-//        if !viewModel.canTrowBack {
-//            
-//            
-//            currentValue = 0
-//            
-//            
-//            
-//            if let previousAcceleration = self.previousAcceleration {
-//                let deltaX = acceleration.x - previousAcceleration.x
-//                let deltaY = acceleration.y - previousAcceleration.y
-//                let deltaZ = acceleration.z - previousAcceleration.z
-//                let magnitude = sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ)
-//                
-//                let maxAcceleration: Double = 2.0
-//                let speed = min(magnitude / maxAcceleration * 1000, 2000)
-//                
-//                currentValue = speed
-//                
-//                print("Direzione calcolata: \(atan2(deltaY, deltaX))\n")
-//                if currentValue > 1000 && deltaY > 0.5 && atan2(deltaY, deltaX) < -1 {
-//                    
-//                    // La funzione che gestisce la logica di tiro indietro del braccio
-//                    print("Direzione calcolata in TrowBack:\(atan2(deltaY, deltaX))\n")
-//                    currentValue = 0
-//                    viewModel.canTrowBack = true
-//                    
-//                    viewModel.canTrow = 1
-//                    
-//                    Timer.scheduledTimer(withTimeInterval: 3, repeats: false){ _ in
-//                        viewModel.canTrowBack = false
-//                    }
-//                    
-//                }
-//            }
-//
-//            self.previousAcceleration = acceleration
-//        }
 
     }
     
@@ -222,13 +175,16 @@ struct ContentView: View {
         // print("Hai eseguito un lancio")
         viewModel.canTrow = 0
         currentValue = 0
-        setSemaferoRed = true
-        // print("Provo ad inviare i segnali di lancio")
-        viewModel.sendMessage(key: "trow", value: 1)
         viewModel.maxAcceleration = 0
         
         // Vengono gestiti gli ack
-        self.handleHacknowledgement()
+        if viewModel.canTrowSecondSignal == 1 {
+            viewModel.canTrowSecondSignal = 0
+            setSemaferoRed = true
+            viewModel.sendMessage(key: "trow", value: 1)
+            self.handleHacknowledgement()
+        }
+        
     }
     
     // Gestione dell'ack per il lancio

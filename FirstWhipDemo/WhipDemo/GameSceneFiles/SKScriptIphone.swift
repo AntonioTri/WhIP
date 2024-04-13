@@ -65,10 +65,13 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     
     let velocitaOrizontale = -155.0
     let velocitaVerticale = Double.random(in: 1...100)
-    var isMoving = false
     var autolockBG = true
+    
     var showProgressBar = false
     var showRope = false
+    var baiting = false
+    var fishPullingRope = false
+    
     var canPressMainMenu = false
     var setSemaferoGreen = false
     var setSemaferoRed = false
@@ -83,14 +86,21 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     var autolockAtterraggio = true
     var autolockPB = true
     var contactCount = 0
+    
+    var autolockBlinking = true
 
     var fishingProgress = 0.0
     
     var viewModel: ViewModel!
+    var blinkingSignal: BlinkingRedSignal!
     var savingCenter = SavingsCenter()
     let tableGenerator = TableGenerator()
+    
+   
     var fish: Fish!
     var fishCollection: FishCollection!
+    var commonFishGUI: CommonFishesGUI!
+    var backGround: BackGround!
     var currentTable: [[Int]] = []
     var currentState = 0
     
@@ -98,33 +108,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         self.inizialize()
 
     }
-    
-    func findFisrtAndSecondMax(in matrix: [[Int]], column: Int) -> (Int, Int){
-        
-        guard !matrix.isEmpty, column >= 0, column < matrix[0].count else {
-            return (0,0) // Matrice vuota o indice di colonna non valido
-        }
-        
-        var maxIndex = -1
-        var secondMaxIndex = -1
-        var maxValue = Int.min
-        var secondMaxValue = Int.min
-        
-        for (row, rowValues) in matrix.enumerated() {
-            if rowValues[column] > maxValue {
-                secondMaxValue = maxValue
-                secondMaxIndex = maxIndex
-                maxValue = rowValues[column]
-                maxIndex = row
-            } else if rowValues[column] > secondMaxValue {
-                secondMaxValue = rowValues[column]
-                secondMaxIndex = row
-            }
-        }
-        
-        return (maxIndex, secondMaxIndex)
-        
-    }
+
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         
@@ -132,19 +116,37 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         let position = touch!.location(in: self)
         let currentNode = self.atPoint(position) as? SKSpriteNode
         
+        
+        
+        
+        
+        
+//        fish.setNewInternalState(typeSpawned: 0, raritySpawned: 0)
+        // Viene inviato il tocco anche alla GUI dei pesci
+        self.commonFishGUI.checkXButtonPressed(touchedNode: currentNode ?? SKSpriteNode())
         // Si manda il tocco sullo schermo al menù dei collezionabili
-        fishCollection.scrollPage(touch: touch!)
-        print(findFisrtAndSecondMax(in: currentTable, column: 3))
+        self.fishCollection.scrollPage(touch: touch!)
+        // TEST
+//        self.fish.setNewInternalState(typeSpawned: Int.random(in: 1...9), raritySpawned: Int.random(in: 0...3))
+        
         
         if currentNode == self.playButton {
             
             self.playButton.run(SKAction.playSoundFileNamed("buttonClick", waitForCompletion: true))
-            self.showGamingScene()
+            
+            if hourChanged(){
+                print("L'ora è cambiata. Mostro la gui dei pesci giornalieri")
+                self.commonFishGUI.showUp(table: self.currentTable)
+            } else {
+                print("L'ora non è cambiata. Mostro direttamente la gaming Scene")
+                self.showGamingScene()
+            }
+            
             self.menu.run(SKAction.group([SKAction.moveTo(y: 2000, duration: 0.8), fadeOut]))
             
             self.currentState = 1
         }
-            
+    
         if currentNode == self.howToPlay{
             
             self.howToPlay.run(SKAction.playSoundFileNamed("buttonClick", waitForCompletion: true))
@@ -180,7 +182,6 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         let sum = (contact.bodyA.node?.physicsBody?.collisionBitMask)! + (contact.bodyB.node?.physicsBody?.collisionBitMask)!
         
         contactCount += 1
-        print("Contatore Contatti = \(contactCount)")
         //Se la somma è 3 l'amo è atterrato sull'acqua e viene inviato il segnale
         if sum == UInt32(3) && viewModel.trow == 1 && autolockAtterraggio && contactCount >= 2{
            
@@ -238,6 +239,23 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
             self.semafero.run(SKAction.group([fadeIn, youCanWhip]))
         }
         
+        // Si mostrano i popup verdi per la cura della lenza
+        if self.viewModel.canSpawnPopup == 1{
+            self.viewModel.canSpawnPopup = 0
+            _ = HealtPopups(scene: self)
+        }
+        
+        // Si gestisce la pulsazione del segnale di pericolo
+        // Con i seguenti due if
+        if viewModel.frDurability < 20 && autolockBlinking {
+            self.autolockBlinking = false
+            self.blinkingSignal.startBlinking()
+        }
+        if viewModel.frDurability > 50 && !autolockBlinking {
+            self.autolockBlinking = true
+            self.blinkingSignal.stopBlinking()
+        }
+        
         // Disegnamo la lenza se ci troviamo nel giusto frame di animazione
         if self.showRope {
             drawLine(x: fishingRodAttachPoint.position.x, y: fishingRodAttachPoint.position.y, galleggiante: galleggiante.position)
@@ -277,6 +295,8 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         
         // Controllo per osservare se il pesce ha abboccato
         if viewModel.pesca == 1 && autolockPB {
+            //Segnale di ackNowledgement
+            self.viewModel.sendMessage(key: "pescaRecieved", value: 1)
             // Viene eseguito lo script per quando il pesce abbocca
             self.fishBaitedAnimation()
         }
@@ -323,26 +343,36 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         print("Resetto le cose")
         viewModel.fineSimulazione = -1
         viewModel.sendMessage(key: "FineSimulazione", value: -1)
-        
-        //Si invia il segnale di reset al watch dopo un breve ritardo
-        Timer.scheduledTimer(withTimeInterval: 2, repeats: false){ _ in
+        self.blinkingSignal.stopBlinking()
+        // Si eseguono dei reset in modo dilaizonato, operazioni delicate che hanno a che fare
+        // con la connectivity e la possibilità di premere dei bottoni nella scena
+        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false){ _ in
+            
             self.autolockLancio = true
             self.viewModel.sendMessage(key: "canTrow", value: 1)
-            self.setSemaferoGreen = true
+            // Viene inviato un secondo segnale per dare tempo al watch di resettare i suoi dati interni
+            // Prima di riprendere con l'ascolto dei movimenti tramite il giroscopio
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: false){ _ in
+                self.viewModel.sendMessage(key: "canTrowSecondSignal", value: 1)
+                self.setSemaferoGreen = true
+                self.fishCollection.showCollectionbutton()
+                // Faccio ricomparire il botone per tornare al menù
+                self.canPressMainMenu = true
+                self.mainMenu.run(self.fadeIn)
+            }
+            
         }
         
-        //Si porta il valore della vittoria conservato nel viewModel a 0
-        viewModel.vittoria = 0
+        // Si porta il valore della vittoria conservato nel viewModel a 400
+        viewModel.vittoria = 400
         // reset dell'autolock sulla animazione di bait
         self.autolockPB = true
         // Si nasconde la progress bar
         self.showProgressBar = false
         // Si nasconde la'amo da pesca e si pulisce l'ultima lenza disegnata
         self.showRope = false
+        self.fishPullingRope = false
         oldLine.removeFromParent()
-        // Faccio ricomparire il botone per tornare al menù
-        self.canPressMainMenu = true
-        self.mainMenu.run(fadeIn)
         
         // Si resettano le posizioni e le animazioni
         self.galleggiante.position.x = CGFloat(1120)
@@ -373,7 +403,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         self.showRope = false
         self.oldLine.removeFromParent()
         self.autolockVittoria = false
-        
+        self.blinkingSignal.stopBlinking()
         // Dopo un breve lasso di tempo si resetta il trofeo in basso e si resetta la scena
         Timer.scheduledTimer(withTimeInterval: 6, repeats: false){ _ in
             self.resetThings()
@@ -408,6 +438,10 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         self.showProgressBar = true
         self.setPesca()
         
+        //Si nasconde la lenza curva e si mostra quella diritta
+        self.baiting = false
+        self.fishPullingRope = true
+        
         // Eseguo una nuova animazione per il galleggiante
         progressionBar.run(fadeIn)
         galleggiante.run(infiniteBaitingAnimation)
@@ -428,11 +462,15 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         autolockLancio = false
         autolockAtterraggio = true
         
+        // Si mostra la lenza
+        self.baiting = true
+        
         // Vì Viene eseguita l'animazione del lancio
         print("Animazine lancio")
         self.fishingRod.run(trowingFishingRod)
         self.fishingRod.run(fishingRodCast)
         self.setSemaferoRed = true
+        self.fishCollection.hideCollectionButton()
         
         // Viene segnalato che il segnale di lancio è arrivato
         viewModel.sendMessage(key: "trowSignalRecieved", value: 1)
@@ -498,7 +536,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         }
         
         // viene ritornata la rarità così generata
-        return choosedRarity
+        return 3
     }
     
     //La funzione che restituisce un intero rappresentante uno dei pesci disponibili in giornata
@@ -531,7 +569,6 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         self.galleggiante.alpha = 1
         self.galleggiante.physicsBody?.applyImpulse(CGVector(dx: velocitaOrizontale - Double(Int.random(in: 60...80)), dy: velocitaVerticale + 500))
         
-        //Connectivity
         let action = SKAction.scale(by: Double.random(in: 0.5...0.7), duration: 1)
         self.galleggiante.run(action)
 
@@ -545,6 +582,18 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     // Funzione che mi permette di disegnare la lenza
     private func drawLine(x: Double, y: Double, galleggiante: CGPoint){
         
+        if self.baiting {
+            self.drawParabolas(x: x, y: y, galleggiante: galleggiante)
+        } else if self.fishPullingRope {
+            self.drawStraightLine(x: x, y: y, galleggiante: galleggiante)
+        }
+        
+        
+    }
+    
+    // Disegno della lenza diritta
+    private func drawStraightLine(x: Double, y: Double, galleggiante: CGPoint){
+        
         let yourLine = SKShapeNode()
         let pathToDraw = CGMutablePath()
         
@@ -556,11 +605,66 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         
         //Si setta il colore del filo sulla base della durabilità
         yourLine.strokeColor = self.colorFromValue(CGFloat(viewModel.frDurability))
+        yourLine.zPosition = 4
         
         addChild(yourLine)
         oldLine = yourLine
         
+    }
+    
+    // Disegno della lenza curva
+    private func drawParabolas(x: Double, y: Double, galleggiante: CGPoint){
         
+        var yourLine = SKShapeNode()
+        let pathToDraw = CGMutablePath()
+        
+        oldLine.removeFromParent()
+        
+        let pointA = CGPoint(x: galleggiante.x, y: galleggiante.y)
+        let pointB = CGPoint(x: x, y: y)
+        let controlPoint = CGPoint(x: (pointA.x + pointB.x) / 2, y: pointA.y - (pointB.y - pointA.y) * 0.1)
+        
+        pathToDraw.move(to: pointA)
+        pathToDraw.addQuadCurve(to: pointB, control: controlPoint)
+        yourLine = SKShapeNode(path: pathToDraw)
+        
+        //Si setta il colore del filo sulla base della durabilità
+        yourLine.strokeColor = self.colorFromValue(CGFloat(viewModel.frDurability))
+        yourLine.zPosition = 4
+        
+        addChild(yourLine)
+        oldLine = yourLine
+    }
+    
+    //Questa funzione serve a capire se l'ora è cambiata
+    private func hourChanged() -> Bool{
+        
+        let currentHour = findHour()
+        let savedHour = savingCenter.getSavedInteger(key: savingCenter.SKSCRIPT_HOUR_SAVED)
+        
+        if currentHour != savedHour {
+            savingCenter.saveInteger(dataToSave: currentHour, key: savingCenter.SKSCRIPT_HOUR_SAVED)
+            return true
+        }
+        
+        return false
+    }
+    
+    // Questa funzione serve a normalizzare il valore dell'ora per indicare 3 fasce orarie specifiche
+    // 0 indica il giorno, 1 il pomeriggio e 2 sera e notte
+    func findHour() -> Int {
+     
+        var hour = Calendar.current.component(.hour, from: Date())
+        
+        if hour >= 9 && hour < 15 {
+            hour = 0
+        } else if hour >= 15 && hour < 21 {
+            hour = 1
+        } else if (hour >= 21 && hour <= 24) || (hour > 0 && hour < 9) {
+            hour = 2
+        }
+        
+        return hour
     }
     
     //Questa funzione genera il colore della lenza sulla base della sua durabilità
@@ -580,8 +684,8 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     private func progressionBarColor(_ value: CGFloat) -> UIColor{
         
         // Creiamo le componenti sulla base del viewModel
-        let red = value / 600
-        let green = 1 - (value / 600)
+        let red = value / 800
+        let green = 1 - (value / 800)
         
         return UIColor(red: red, green: green, blue: 0.25, alpha: 1)
     }
@@ -589,7 +693,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     //Questa funzione modifica la lunghezza ed il colore della barra di progressione
     private func updateProgressionBar() {
         //Viene reso dinamico il size della barra
-        self.progressionBar.size.width = CGFloat(950 - (( 950 * viewModel.vittoria) / 600))
+        self.progressionBar.size.width = CGFloat(950 - (( 950 * viewModel.vittoria) / 800))
         // Viene cambiato il colore sulla base della vittoria
         self.progressionBar.color = self.progressionBarColor(CGFloat(viewModel.vittoria))
     }
@@ -624,11 +728,6 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         barraOrizzontale.alpha = 0
         progressionBar.alpha = 0
         fishingRod.alpha = 0
-       
-        // Creiamo i suoni
-        //BackGround
-        let backGroundSound = SKAction.playSoundFileNamed("ambience", waitForCompletion: true)
-        backGroundAmbiance = SKAction.repeatForever(backGroundSound)
         
         //Baiting
         let baitingSnd = SKAction.playSoundFileNamed("baitingSound", waitForCompletion: true)
@@ -636,13 +735,6 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         
         //Fishing rod cast
         fishingRodCast = SKAction.playSoundFileNamed("frCast", waitForCompletion: true)
-        //Sprite backGround
-        let bg1 = SKTexture(imageNamed: "sfondo0")
-        let bg2 = SKTexture(imageNamed: "sfondo1")
-        let bg3 = SKTexture(imageNamed: "sfondo2")
-        let bg4 = SKTexture(imageNamed: "sfondo3")
-        let bg5 = SKTexture(imageNamed: "sfondo4")
-        let bg6 = SKTexture(imageNamed: "sfondo5")
         
         //Sprite del galleggiante
         let gall1 = SKTexture(imageNamed: "galleggiante1")
@@ -682,7 +774,6 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         let canWhip1 = SKTexture(imageNamed: "canWhip1")
         let canWhip2 = SKTexture(imageNamed: "canWhip2")
         
-        backgroundTextures = [bg1, bg2, bg3, bg4, bg5, bg6]
         
         //Creiamo le diverse animazioni
         
@@ -694,8 +785,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         youCanWhip = SKAction.animate(with: [canWhip1, canWhip2], timePerFrame: 0.35)
         youCanWhip = SKAction.repeatForever(youCanWhip)
         
-        // Animazione per il backGround
-        backGroundAnimation = SKAction.animate(with: backgroundTextures, timePerFrame: 0.3)
+        
         // animazione per il landing del galleggiante
         landingBaitAnimation = SKAction.animate(with: [gall2, gall3, gall4, gall6, gall5], timePerFrame: 0.2)
         // Animazione di quando il galleggiante sta sull'acqua
@@ -722,12 +812,9 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         // ... Resa infinita
         pullingFishingRod = SKAction.repeatForever(pullingFishingRod)
         
-        
         // Si crea l'animazione infinita per il galleggiante
         let infiniteWigglingBaitAnimation = SKAction.repeatForever(wigglingBaitAnimation)
         baitGroupAnimation = SKAction.group([landingBaitAnimation, infiniteWigglingBaitAnimation])
-        // Si crea l'animazione infinita per il backGround
-        let repeatActionBG = SKAction.repeatForever(backGroundAnimation)
         // Creo l'animazione infinita per  quando il pesce ha abboccato
         let baiting = SKAction.animate(with: [gall2, gall3, gall4, gall6, gall5], timePerFrame: 0.1)
         infiniteBaitingAnimation = SKAction.repeatForever(baiting)
@@ -748,15 +835,8 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         pullingUPFish1 = SKAction.sequence([sequence1, trowing2])
         pullingUPFish2 = SKAction.sequence([sequence2, trowing2])
         
-        //Impostiamo il backGround
-        backgroundNode = SKSpriteNode(texture: bg1)
-        backgroundNode.position = CGPoint(x: 0, y: size.height / 2)
-        backgroundNode.size = CGSize(width: 1634, height: 750)
-        backgroundNode.zPosition = -100
-        backgroundNode.run(repeatActionBG)
-        
-        addChild(backgroundNode)
-        backgroundNode.run(backGroundAmbiance)
+        // Inizializziamo il backGround
+        self.backGround = BackGround(scene: self)
         
         // Si inizializzano i sistemi di controllo centrale
         // La tavola dei valori giornaliera
@@ -767,10 +847,14 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         self.fish = Fish(scene: self, savingCenter: savingCenter, collection: fishCollection)
         // Di base viene aggiornato la collezione la quando si apre il gioco, per settare le texture corrette
         self.fishCollection.updateCollection()
+        // La GUI dei pesci rari più comuni
+        self.commonFishGUI = CommonFishesGUI(scene: self, savingCenter: self.savingCenter)
+        // Il segnale che si illumina quando la lenza ha una bassa durabilità
+        self.blinkingSignal = BlinkingRedSignal(scene: self)
         
     }
     
-    private func logaritmo (base: Double, argomento: Double) -> Double { // MANDA A ANTONIO
+    private func logaritmo (base: Double, argomento: Double) -> Double {
         return log(argomento) / log(base)
     }
     
@@ -811,6 +895,8 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         return currentState
         
     }
+    
+    
     
 
 }
