@@ -67,8 +67,8 @@ class SoundRecorder: NSObject, AVAudioRecorderDelegate{
             let peakPower = self.audioRecorder.peakPower(forChannel: 0)
             
             if peakPower > -1.75 { // Imposta la soglia di rumore da considerare come "forte"
-                if hapticFishing.fihsingRodDurability < 70 {
-                    hapticFishing.fihsingRodDurability += 3
+                if hapticFishing.fihsingRodDurability < 80 {
+                    hapticFishing.fihsingRodDurability += 7
                     print("Aumento la durabilità di 2: \(hapticFishing.fihsingRodDurability)")
                     hapticFishing.viewModel.sendMessage(key: "canSpawnPopup", value: 1)
                     hapticFishing.viewModel.sendMessage(key: "frDurability", value: hapticFishing.fihsingRodDurability)

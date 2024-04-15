@@ -43,8 +43,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     // Animaizone vittoria del pesce 1
     var infiniteFish1Animation = SKAction()
     var infiniteFish2Animation = SKAction()
-    var pullingUPFish1 = SKAction()
-    var pullingUPFish2 = SKAction()
+    var trowingPT2 = SKAction()
     var youCanWhip = SKAction()
     
     // Animazioni di lancio
@@ -61,6 +60,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     var backGroundAmbiance = SKAction()
     var baitingSound = SKAction()
     var fishingRodCast = SKAction()
+    var breakingRope = SKAction()
 
     
     let velocitaOrizontale = -155.0
@@ -70,6 +70,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     var showProgressBar = false
     var showRope = false
     var baiting = false
+    var canSpawnFly = false
     var fishPullingRope = false
     
     var canPressMainMenu = false
@@ -101,6 +102,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     var fishCollection: FishCollection!
     var commonFishGUI: CommonFishesGUI!
     var backGround: BackGround!
+    var fly: Fly!
     var currentTable: [[Int]] = []
     var currentState = 0
     
@@ -109,6 +111,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
 
     }
 
+    var test = true
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         
@@ -116,19 +119,10 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         let position = touch!.location(in: self)
         let currentNode = self.atPoint(position) as? SKSpriteNode
         
-        
-        
-        
-        
-        
-//        fish.setNewInternalState(typeSpawned: 0, raritySpawned: 0)
         // Viene inviato il tocco anche alla GUI dei pesci
         self.commonFishGUI.checkXButtonPressed(touchedNode: currentNode ?? SKSpriteNode())
         // Si manda il tocco sullo schermo al menù dei collezionabili
         self.fishCollection.scrollPage(touch: touch!)
-        // TEST
-//        self.fish.setNewInternalState(typeSpawned: Int.random(in: 1...9), raritySpawned: Int.random(in: 0...3))
-        
         
         if currentNode == self.playButton {
             
@@ -182,8 +176,9 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         let sum = (contact.bodyA.node?.physicsBody?.collisionBitMask)! + (contact.bodyB.node?.physicsBody?.collisionBitMask)!
         
         contactCount += 1
+        print("Contatore Contatti = \(contactCount)")
         //Se la somma è 3 l'amo è atterrato sull'acqua e viene inviato il segnale
-        if sum == UInt32(3) && viewModel.trow == 1 && autolockAtterraggio && contactCount >= 2{
+        if sum == UInt32(3) && autolockAtterraggio && contactCount >= 2{
            
             print("Invio il segnale di inizio simulazione")
             
@@ -239,6 +234,15 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
             self.semafero.run(SKAction.group([fadeIn, youCanWhip]))
         }
         
+        // Si gestiscono gli eventi per scacciare le mosche
+        if viewModel.trowBait == 1 && self.fly.getFlyIsSpawned() {
+            viewModel.trowBait = 0
+            print("Scaccio la mosca")
+            self.fly.setFlyGoAway()
+        } else if viewModel.trowBait == 1 {
+            viewModel.trowBait = 0
+        }
+        
         // Si mostrano i popup verdi per la cura della lenza
         if self.viewModel.canSpawnPopup == 1{
             self.viewModel.canSpawnPopup = 0
@@ -247,7 +251,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         
         // Si gestisce la pulsazione del segnale di pericolo
         // Con i seguenti due if
-        if viewModel.frDurability < 20 && autolockBlinking {
+        if viewModel.frDurability < 35 && autolockBlinking {
             self.autolockBlinking = false
             self.blinkingSignal.startBlinking()
         }
@@ -353,6 +357,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
             // Viene inviato un secondo segnale per dare tempo al watch di resettare i suoi dati interni
             // Prima di riprendere con l'ascolto dei movimenti tramite il giroscopio
             Timer.scheduledTimer(withTimeInterval: 1, repeats: false){ _ in
+                print("Invio il secondo segnale di can Trow")
                 self.viewModel.sendMessage(key: "canTrowSecondSignal", value: 1)
                 self.setSemaferoGreen = true
                 self.fishCollection.showCollectionbutton()
@@ -386,6 +391,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         self.fishingRod.removeAllActions()
         self.fishingRodAttachPoint.position = CGPoint(x: 200, y: 586.41)
         self.fishingRod.run(infiniteIdleAnimation)
+        
     }
 
     
@@ -403,6 +409,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         self.showRope = false
         self.oldLine.removeFromParent()
         self.autolockVittoria = false
+        self.canSpawnFly = false
         self.blinkingSignal.stopBlinking()
         // Dopo un breve lasso di tempo si resetta il trofeo in basso e si resetta la scena
         Timer.scheduledTimer(withTimeInterval: 6, repeats: false){ _ in
@@ -413,6 +420,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     // Funzione che gestisce la sconfitta
     private func loseAnimation(){
         print("Animazione Sconfitta")
+        self.fishingRod.run(self.breakingRope)
         self.fishingRodAttachPoint.removeAllActions()
         self.progressionBar.run(fadeOut)
         self.resetThings()
@@ -423,6 +431,7 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     // Funzione che gestisce la rottura lenza
     private func brokenRopeAnimation(){
         print("Animazione Rottura lenza")
+        self.fishingRod.run(self.breakingRope)
         self.fishingRodAttachPoint.removeAllActions()
         self.progressionBar.run(fadeOut)
         self.resetThings()
@@ -442,6 +451,10 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         self.baiting = false
         self.fishPullingRope = true
         
+        // Si blocca anche la possibilità di spawnarne di nuove
+        // Oltre che scacciare la mosca corrente se presente
+        self.fly.stopSpawningMoreFlyes()
+        
         // Eseguo una nuova animazione per il galleggiante
         progressionBar.run(fadeIn)
         galleggiante.run(infiniteBaitingAnimation)
@@ -449,14 +462,21 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         // Viene eseguito il suono di baiting
         fishingRodAttachPoint.run(baitingSound)
         fishingRodAttachPoint.position = CGPoint(x: 207.759, y: 514.982)
+        
     }
     
     // Funzione che gestisce il lancio della canna da pesca
     private func trowAnimation(){
         
-        // Nascondo il bottone per tornare al menù
-        self.canPressMainMenu = false
+        // Viene segnalato che il segnale di lancio è arrivato
+        viewModel.sendMessage(key: "trowSignalRecieved", value: 1)
+        viewModel.trowSignalRecieved = 0
+        
+        // Nascondo i vari bottoni e gui varie
         self.mainMenu.run(fadeOut)
+        self.setSemaferoRed = true
+        self.canPressMainMenu = false
+        self.fishCollection.hideCollectionButton()
         
         // Si resettano gli autolock
         autolockLancio = false
@@ -465,16 +485,13 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         // Si mostra la lenza
         self.baiting = true
         
+        // Inizia a spawnare le mosche
+        self.fly.startSpawningFlyes()
+        
         // Vì Viene eseguita l'animazione del lancio
         print("Animazine lancio")
         self.fishingRod.run(trowingFishingRod)
         self.fishingRod.run(fishingRodCast)
-        self.setSemaferoRed = true
-        self.fishCollection.hideCollectionButton()
-        
-        // Viene segnalato che il segnale di lancio è arrivato
-        viewModel.sendMessage(key: "trowSignalRecieved", value: 1)
-        viewModel.trowSignalRecieved = 0
     
     }
     
@@ -546,34 +563,28 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     
     // Funzione che mostra il pesce pescato, sia sulla canna da pesca che come trofeo
     private func showFish(){
+
+        let texture1 = SKTexture(imageNamed: "pullingUp-\(viewModel.typeSpawned)-1")
+        let texture2 = SKTexture(imageNamed: "pullingUp-\(viewModel.typeSpawned)-2")
+        let texture3 = SKTexture(imageNamed: "pullingUp-\(viewModel.typeSpawned)-3")
         
-        let randomFish = Int.random(in: 1...2)
+        let anim1 = SKAction.animate(with: [texture1, texture2, texture3], timePerFrame: 0.2)
         
-        switch randomFish {
-            
-            case 1:
-                self.fishingRod.run(pullingUPFish1)
-                break
-            case 2:
-                self.fishingRod.run(pullingUPFish2)
-                break
-            default: print("Errore nella generazione del pesce")
-            
-        }
-        
+        let pullingUpAnimation = SKAction.sequence([anim1, self.trowingPT2])
+        self.fishingRod.run(pullingUpAnimation)
         
     }
     
     private func movimentoAmoAlLancio () {
         
         self.galleggiante.alpha = 1
-        self.galleggiante.physicsBody?.applyImpulse(CGVector(dx: velocitaOrizontale - Double(Int.random(in: 60...80)), dy: velocitaVerticale + 500))
+        self.galleggiante.physicsBody?.applyImpulse(CGVector(dx: velocitaOrizontale - Double(Int.random(in: 60...100)), dy: velocitaVerticale + 500))
         
         let action = SKAction.scale(by: Double.random(in: 0.5...0.7), duration: 1)
         self.galleggiante.run(action)
 
         Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { _ in
-            self.barraOrizzontale.position.y = CGFloat(self.logaritmo(base: 1.01236, argomento: self.velocitaVerticale)) - 100
+            self.barraOrizzontale.position.y = CGFloat(Int.random(in: 161...280))
             
         }
         
@@ -763,16 +774,12 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         let fish21 = SKTexture(imageNamed: "fish21")
         let fish22 = SKTexture(imageNamed: "fish22")
         
-        //Sprite di quando si tira su il pesce pescato
-        let pescaPesce11 = SKTexture(imageNamed: "pescaPesce11")
-        let pescaPesce12 = SKTexture(imageNamed: "pescaPesce12")
-        let pescaPesce13 = SKTexture(imageNamed: "pescaPesce13")
-        let pescaPesce21 = SKTexture(imageNamed: "pescaPesce21")
-        let pescaPesce22 = SKTexture(imageNamed: "pescaPesce22")
-        let pescaPesce23 = SKTexture(imageNamed: "pescaPesce23")
-        
         let canWhip1 = SKTexture(imageNamed: "canWhip1")
         let canWhip2 = SKTexture(imageNamed: "canWhip2")
+        
+        let breaking1 = SKTexture(imageNamed: "breakingRope-1")
+        let breaking2 = SKTexture(imageNamed: "breakingRope-2")
+        let breaking3 = SKTexture(imageNamed: "breakingRope-3")
         
         
         //Creiamo le diverse animazioni
@@ -822,22 +829,22 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         infiniteBaitIdle = SKAction.animate(with: [gall1], timePerFrame: 1)
         infiniteBaitIdle = SKAction.repeatForever(infiniteBaitIdle)
         
+        // Animaizone per la rottura e scappaggio pesce della lenza
+        let breaking = SKAction.animate(with: [breaking1, breaking2, breaking3], timePerFrame: 0.3)
+        self.breakingRope = SKAction.sequence([breaking, trowing2])
         
         // Creo l'animazione di quando il pesce pescato viene mostrato a schermo
         infiniteFish1Animation = SKAction.animate(with: [fish11, fish12], timePerFrame: 0.14)
         infiniteFish2Animation = SKAction.animate(with: [fish21, fish22], timePerFrame: 0.14)
         infiniteFish1Animation = SKAction.repeatForever(infiniteFish1Animation)
         infiniteFish2Animation = SKAction.repeatForever(infiniteFish2Animation)
+       
         
-        // Creo l'animazione di quando si tira su il pesce
-        let sequence1 = SKAction.animate(with: [pescaPesce11, pescaPesce12, pescaPesce13], timePerFrame: 0.3)
-        let sequence2 = SKAction.animate(with: [pescaPesce21, pescaPesce22, pescaPesce23], timePerFrame: 0.3)
-        pullingUPFish1 = SKAction.sequence([sequence1, trowing2])
-        pullingUPFish2 = SKAction.sequence([sequence2, trowing2])
+        
+        self.trowingPT2 = trowing2
         
         // Inizializziamo il backGround
         self.backGround = BackGround(scene: self)
-        
         // Si inizializzano i sistemi di controllo centrale
         // La tavola dei valori giornaliera
         self.initializeTable()
@@ -851,6 +858,8 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         self.commonFishGUI = CommonFishesGUI(scene: self, savingCenter: self.savingCenter)
         // Il segnale che si illumina quando la lenza ha una bassa durabilità
         self.blinkingSignal = BlinkingRedSignal(scene: self)
+        // Il pane
+        self.fly = Fly(scene: self, savingCenter: self.savingCenter)
         
     }
     
@@ -880,6 +889,8 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
     public func showGamingScene(){
         
         viewModel.sendMessage(key: "canTrow", value: 1)
+        viewModel.sendMessage(key: "canTrowSecondSignal", value: 1)
+        self.handleACKs()
         self.fishCollection.showCollectionbutton()
         self.setSemaferoGreen = true
         self.fishingRod.run(fadeIn)
@@ -887,6 +898,45 @@ class SKScriptIphone: SKScene, SKPhysicsContactDelegate {
         self.mainMenu.run(fadeIn)
         self.canPressMainMenu = true
         self.menuOpen = false
+        
+    }
+    
+    private func handleACKs(){
+        
+        // Questa variabile conta gli ack da dover ricevere
+        var bothACKs = 0
+        
+        // Questo timer molto veloce ed insistente attende che i segnali siano arrivati
+        // Al watch e che siano stati inviati degl ack positivi. In entrambi i segnali, se questi
+        // Non sono arrivati vengono reinviati
+        // Al momento in cui entrambi i segnali sono arrivati, il timer si auto invalida
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true){ timer in
+            
+            if self.viewModel.canTrowRecieved == 1 {
+                print("Segnale cantrow arrivato, smetto di inviarlo indietro")
+                self.viewModel.canTrowRecieved = 0
+                bothACKs += 1
+            } else {
+                print("Reinvio il canTrow")
+                self.viewModel.sendMessage(key: "canTrow", value: 1)
+            }
+            
+            if self.viewModel.canTrowSecondSignalRecieved == 1 {
+                print("Segnale cantrow2 arrivato, smetto di inviarlo indietro")
+                self.viewModel.canTrowSecondSignalRecieved = 0
+                bothACKs += 1
+            } else {
+                print("Reinvio il secondSignale")
+                self.viewModel.sendMessage(key: "canTrowSecondSignal", value: 1)
+            }
+            
+            if bothACKs >= 2 {
+                timer.invalidate()
+            }
+            
+            
+        }
+        
         
     }
     

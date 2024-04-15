@@ -20,6 +20,7 @@ class SavingsCenter {
     // Database interno
     public let FIRST_GAMEPLAY_EVER = "FGE"
     public let COMMON_FISH_SHOWED_UP = "ComonFishShowedUp"
+    public let FLY_TUTORIAL = "flyTutorial"
     public let NOTIFICATION_HOUR = "notifichescionHour"
     public let GUI_HOUR_SAVED = "GuiHourSaved"
     public let SKSCRIPT_HOUR_SAVED = "SKScriptHourSaved"

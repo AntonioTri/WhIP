@@ -35,7 +35,9 @@ class ViewModel: ObservableObject{
     @Published var fineSimulazione: Int = -1
     @Published var inizioSimulazione: Int = -1
     @Published var canTrow: Int = 0
-    @Published var canTrowSecondSignal: Int = 1
+    @Published var canTrowRecieved: Int = 0
+    @Published var canTrowSecondSignal: Int = 0
+    @Published var canTrowSecondSignalRecieved: Int = 0
     @Published var vittoria: Int = 0
     
     @Published var pesca: Int = 0
@@ -53,6 +55,9 @@ class ViewModel: ObservableObject{
     @Published var choosedRarity = -1
     
     @Published var canSpawnPopup = 0
+    
+    @Published var awakeSignal = -1
+    @Published var trowBait = -1
     
     
     var valueModel: PassthroughSubject<Value, Never> = PassthroughSubject<Value, Never>()
@@ -82,8 +87,12 @@ class ViewModel: ObservableObject{
                 
             case "canTrow":
                 self.canTrow = value.value
+            case "canTrowRecieved":
+                self.canTrowRecieved = value.value
             case "canTrowSecondSignal":
                 self.canTrowSecondSignal = value.value
+            case "canTrowSecondSignalRecieved":
+                self.canTrowSecondSignalRecieved = value.value
             case "maxAcceleration":
                 self.maxAcceleration = value.value
             case "Avanti":
@@ -115,6 +124,11 @@ class ViewModel: ObservableObject{
                 
             case "canSpawnPopup":
                 self.canSpawnPopup = value.value
+                
+            case "AwakeSignal":
+                self.awakeSignal = value.value
+            case "trowBait":
+                self.trowBait = value.value
                 
             default:
                 print("Error. Path = \(value.path). Value = \(value.value)")

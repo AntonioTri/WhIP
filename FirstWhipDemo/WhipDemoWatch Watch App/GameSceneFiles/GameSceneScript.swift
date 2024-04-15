@@ -14,6 +14,7 @@ class GameSceneScript: SKScene, SKPhysicsContactDelegate{
     var lockRarity = true
     var viewModel: ViewModel!
     var simulation: SimulazionePesce!
+    var foregroundLoop = ForegroundLoop()
     var semafero = SKSpriteNode()
     var fadeIn = SKAction()
     var fadeOut = SKAction()
@@ -23,7 +24,6 @@ class GameSceneScript: SKScene, SKPhysicsContactDelegate{
     override func sceneDidLoad() {
         // Si inizializza la scena
         self.initialize()
-        
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -31,7 +31,15 @@ class GameSceneScript: SKScene, SKPhysicsContactDelegate{
         //Si imposta il semaforo al colore verde quando trow è vero
         if viewModel.canTrow == 1 && !setSemaferoGreen{
             setSemaferoGreen = true
+            // AckNowledgement
+            viewModel.sendMessage(key: "canTrowRecieved", value: 1)
+            
         }
+        // AckNowledgement
+        if viewModel.canTrowSecondSignal == 1 {
+            viewModel.sendMessage(key: "canTrowSecondSignalRecieved", value: 1)
+        }
+        
         // altrimenti si imposta il semaforo su rosso
         if viewModel.canTrow == 0 && !setSemaferoRed {
             setSemaferoRed = true
@@ -45,6 +53,7 @@ class GameSceneScript: SKScene, SKPhysicsContactDelegate{
         // Si controllano i casi di vittoria per eventuali eventi
         self.checkVictoryCondition()
     }
+
     
     // Funzione che controlla se ci sono casi di vittoria
     private func checkVictoryCondition(){
@@ -171,6 +180,7 @@ class GameSceneScript: SKScene, SKPhysicsContactDelegate{
         // Animaizoni per la scritta "You Can Whip"
         youCanWhip = SKAction.animate(with: [canWhip1, canWhip2], timePerFrame: 0.35)
         youCanWhip = SKAction.repeatForever(youCanWhip)
+        
     }
     
     func setViewModel(viewModel: ViewModel ){
@@ -178,7 +188,6 @@ class GameSceneScript: SKScene, SKPhysicsContactDelegate{
         self.viewModel = viewModel
         
         self.simulation = SimulazionePesce(viewModel: viewModel)
-//        self.simulation = SimulazionePesce()
     }
     
 }

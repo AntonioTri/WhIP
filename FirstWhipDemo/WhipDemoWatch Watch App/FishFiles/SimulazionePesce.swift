@@ -40,7 +40,7 @@ class SimulazionePesce {
         print("Type: \(viewModel.typeSpawned).\nRarity: \(viewModel.choosedRarity).\n")
         // Pesce.getForza() Pesce.GetTempoDiAttesa()
         
-        self.initialTimer = Timer.scheduledTimer(withTimeInterval: Double.random(in: 4...10), repeats: false){ initialTimer in
+        self.initialTimer = Timer.scheduledTimer(withTimeInterval: Double.random(in: 7...14), repeats: false){ initialTimer in
             self.startSimulation(pesce: pesce)
             self.initialTimer.invalidate()
         }

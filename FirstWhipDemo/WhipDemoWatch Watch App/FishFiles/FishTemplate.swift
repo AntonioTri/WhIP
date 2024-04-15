@@ -264,21 +264,21 @@ class FishTemplate {
         
         if type < 3 {
             
-            self.takeRopeLight = 4
-            self.takeRopeMedium = 8
-            self.takeRopeHeavy = 10
+            self.takeRopeLight = 2
+            self.takeRopeMedium = 4
+            self.takeRopeHeavy = 6
             
         } else if type >= 3 && type < 7 {
             
-            self.takeRopeLight = 6
-            self.takeRopeMedium = 8
-            self.takeRopeHeavy = 12
+            self.takeRopeLight = 3
+            self.takeRopeMedium = 5
+            self.takeRopeHeavy = 7
             
         } else if type >= 7 && type <= 9 {
             
-            self.takeRopeLight = 8
-            self.takeRopeMedium = 10
-            self.takeRopeHeavy = 12
+            self.takeRopeLight = 4
+            self.takeRopeMedium = 6
+            self.takeRopeHeavy = 8
             
         }
         
@@ -287,11 +287,11 @@ class FishTemplate {
         case 0:
             self.addModForTake(value: 0)
         case 1:
-            self.addModForTake(value: 2)
+            self.addModForTake(value: 1)
         case 2:
-            self.addModForTake(value: 4)
+            self.addModForTake(value: 2)
         case 3:
-            self.addModForTake(value: 6)
+            self.addModForTake(value: 3)
             
         default:
             self.addModForTake(value: 2)
@@ -363,13 +363,13 @@ class FishTemplate {
         switch rarity {
             
         case 0:
-            self.fishingRodBreakingSpeed += 2
+            self.fishingRodBreakingSpeed += 1
         case 1:
             self.fishingRodBreakingSpeed += 2
         case 2:
-            self.fishingRodBreakingSpeed += 3
+            self.fishingRodBreakingSpeed += 2
         case 3:
-            self.fishingRodBreakingSpeed += 4
+            self.fishingRodBreakingSpeed += 3
             
         default:
             self.fishingRodBreakingSpeed += 2

@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D8123DE22BCD2DAE0010C1EB /* ForegroundLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8123DE12BCD2DAE0010C1EB /* ForegroundLoop.swift */; };
+		D8123DEA2BCD4B4E0010C1EB /* flyingAroundFly.mov in Resources */ = {isa = PBXBuildFile; fileRef = D8123DE92BCD4B4E0010C1EB /* flyingAroundFly.mov */; };
+		D8123DEC2BCD53240010C1EB /* flyGoingAway.mov in Resources */ = {isa = PBXBuildFile; fileRef = D8123DEB2BCD53240010C1EB /* flyGoingAway.mov */; };
+		D8123DEE2BCD789B0010C1EB /* arrivingfly-2.mov in Resources */ = {isa = PBXBuildFile; fileRef = D8123DED2BCD789A0010C1EB /* arrivingfly-2.mov */; };
+		D8123DF02BCD7AD00010C1EB /* arrivingfly-1.mov in Resources */ = {isa = PBXBuildFile; fileRef = D8123DEF2BCD7AD00010C1EB /* arrivingfly-1.mov */; };
+		D8123DF22BCD7AF40010C1EB /* arrivingfly-3.mov in Resources */ = {isa = PBXBuildFile; fileRef = D8123DF12BCD7AF40010C1EB /* arrivingfly-3.mov */; };
+		D8123DF62BCD84EF0010C1EB /* flySound.wav in Resources */ = {isa = PBXBuildFile; fileRef = D8123DF52BCD84EF0010C1EB /* flySound.wav */; };
 		D81B08D62BA9E7D300658D07 /* ambience.wav in Resources */ = {isa = PBXBuildFile; fileRef = D81B08D52BA9E7D300658D07 /* ambience.wav */; };
 		D81B08D82BA9EA6900658D07 /* baitingSound.wav in Resources */ = {isa = PBXBuildFile; fileRef = D81B08D72BA9EA6900658D07 /* baitingSound.wav */; };
 		D81B08DA2BA9F0C000658D07 /* frCast.wav in Resources */ = {isa = PBXBuildFile; fileRef = D81B08D92BA9F0C000658D07 /* frCast.wav */; };
@@ -16,6 +23,7 @@
 		D85B788D2BCAE98D00F1E119 /* SoundRecorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85B788C2BCAE98D00F1E119 /* SoundRecorder.swift */; };
 		D85B78902BCAFC6E00F1E119 /* HapticFishing.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85B788F2BCAFC6E00F1E119 /* HapticFishing.swift */; };
 		D85B78942BCAFD3E00F1E119 /* BlinkingRedSignal.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85B78932BCAFD3E00F1E119 /* BlinkingRedSignal.swift */; };
+		D85B78992BCC325900F1E119 /* Fly.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85B78982BCC325900F1E119 /* Fly.swift */; };
 		D86FBD942BB8640600CF8D37 /* DPRNG.swift in Sources */ = {isa = PBXBuildFile; fileRef = D86FBD932BB8640600CF8D37 /* DPRNG.swift */; };
 		D876F9482BBD6B860047B2A7 /* BackGround.swift in Sources */ = {isa = PBXBuildFile; fileRef = D876F9472BBD6B860047B2A7 /* BackGround.swift */; };
 		D876F94A2BC2E6700047B2A7 /* CommonFishesGUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D876F9492BC2E6700047B2A7 /* CommonFishesGUI.swift */; };
@@ -72,6 +80,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D8123DE12BCD2DAE0010C1EB /* ForegroundLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForegroundLoop.swift; sourceTree = "<group>"; };
+		D8123DE42BCD33530010C1EB /* WhipDemoWatch Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "WhipDemoWatch Watch App.entitlements"; sourceTree = "<group>"; };
+		D8123DE92BCD4B4E0010C1EB /* flyingAroundFly.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = flyingAroundFly.mov; sourceTree = "<group>"; };
+		D8123DEB2BCD53240010C1EB /* flyGoingAway.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = flyGoingAway.mov; sourceTree = "<group>"; };
+		D8123DED2BCD789A0010C1EB /* arrivingfly-2.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "arrivingfly-2.mov"; sourceTree = "<group>"; };
+		D8123DEF2BCD7AD00010C1EB /* arrivingfly-1.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "arrivingfly-1.mov"; sourceTree = "<group>"; };
+		D8123DF12BCD7AF40010C1EB /* arrivingfly-3.mov */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = "arrivingfly-3.mov"; sourceTree = "<group>"; };
+		D8123DF52BCD84EF0010C1EB /* flySound.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = flySound.wav; sourceTree = "<group>"; };
 		D81B08D52BA9E7D300658D07 /* ambience.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ambience.wav; sourceTree = "<group>"; };
 		D81B08D72BA9EA6900658D07 /* baitingSound.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = baitingSound.wav; sourceTree = "<group>"; };
 		D81B08D92BA9F0C000658D07 /* frCast.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = frCast.wav; sourceTree = "<group>"; };
@@ -83,6 +99,7 @@
 		D85B788E2BCAEDA500F1E119 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		D85B788F2BCAFC6E00F1E119 /* HapticFishing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFishing.swift; sourceTree = "<group>"; };
 		D85B78932BCAFD3E00F1E119 /* BlinkingRedSignal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkingRedSignal.swift; sourceTree = "<group>"; };
+		D85B78982BCC325900F1E119 /* Fly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fly.swift; sourceTree = "<group>"; };
 		D86FBD932BB8640600CF8D37 /* DPRNG.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DPRNG.swift; sourceTree = "<group>"; };
 		D871A8A82B8E74A3004C5C26 /* VibrationsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibrationsApp.swift; sourceTree = "<group>"; };
 		D871A8AA2B8E74A3004C5C26 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -151,6 +168,20 @@
 			path = GameSceneFiles;
 			sourceTree = "<group>";
 		};
+		D85B78972BCC322E00F1E119 /* EnviromentObjects */ = {
+			isa = PBXGroup;
+			children = (
+				D85B788A2BCAE8DA00F1E119 /* HealtPopUp.swift */,
+				D8D2E7562BB9DBB20098F7F7 /* Fish.swift */,
+				D85B78932BCAFD3E00F1E119 /* BlinkingRedSignal.swift */,
+				D876F9472BBD6B860047B2A7 /* BackGround.swift */,
+				D8D2E7582BB9F3B20098F7F7 /* FishCollection.swift */,
+				D876F9492BC2E6700047B2A7 /* CommonFishesGUI.swift */,
+				D85B78982BCC325900F1E119 /* Fly.swift */,
+			);
+			path = EnviromentObjects;
+			sourceTree = "<group>";
+		};
 		D871A89C2B8E74A3004C5C26 = {
 			isa = PBXGroup;
 			children = (
@@ -191,14 +222,9 @@
 		D8D2E7552BB9DAED0098F7F7 /* GameSceneFiles */ = {
 			isa = PBXGroup;
 			children = (
+				D85B78972BCC322E00F1E119 /* EnviromentObjects */,
 				D8F654FC2B9EFF7B00ADEA9D /* SKScriptIphone.swift */,
-				D85B788A2BCAE8DA00F1E119 /* HealtPopUp.swift */,
 				D8F654FA2B9EFF5100ADEA9D /* GameSceneIphone.sks */,
-				D8D2E7562BB9DBB20098F7F7 /* Fish.swift */,
-				D8D2E7582BB9F3B20098F7F7 /* FishCollection.swift */,
-				D876F9472BBD6B860047B2A7 /* BackGround.swift */,
-				D876F9492BC2E6700047B2A7 /* CommonFishesGUI.swift */,
-				D85B78932BCAFD3E00F1E119 /* BlinkingRedSignal.swift */,
 			);
 			path = GameSceneFiles;
 			sourceTree = "<group>";
@@ -226,6 +252,12 @@
 				D81B08D92BA9F0C000658D07 /* frCast.wav */,
 				D81B08DB2BA9F31900658D07 /* baitLandins.wav */,
 				D81B08DD2BA9F62300658D07 /* buttonClick.wav */,
+				D8123DF52BCD84EF0010C1EB /* flySound.wav */,
+				D8123DEB2BCD53240010C1EB /* flyGoingAway.mov */,
+				D8123DE92BCD4B4E0010C1EB /* flyingAroundFly.mov */,
+				D8123DF12BCD7AF40010C1EB /* arrivingfly-3.mov */,
+				D8123DED2BCD789A0010C1EB /* arrivingfly-2.mov */,
+				D8123DEF2BCD7AD00010C1EB /* arrivingfly-1.mov */,
 				D8F654CE2B9EF42C00ADEA9D /* Assets.xcassets */,
 				D8F654D02B9EF42C00ADEA9D /* Preview Content */,
 			);
@@ -243,12 +275,14 @@
 		D8F654DB2B9EF45F00ADEA9D /* WhipDemoWatch Watch App */ = {
 			isa = PBXGroup;
 			children = (
+				D8123DE42BCD33530010C1EB /* WhipDemoWatch Watch App.entitlements */,
 				D85B78892BC5E43000F1E119 /* WhipDemoWatch-Watch-App-Info.plist */,
 				D85B78922BCAFCFF00F1E119 /* GameSceneFiles */,
 				D85B78912BCAFC8A00F1E119 /* FishFiles */,
 				D85B788C2BCAE98D00F1E119 /* SoundRecorder.swift */,
 				D871A8A82B8E74A3004C5C26 /* VibrationsApp.swift */,
 				D871A8AA2B8E74A3004C5C26 /* ContentView.swift */,
+				D8123DE12BCD2DAE0010C1EB /* ForegroundLoop.swift */,
 				D8F654E02B9EF46000ADEA9D /* Assets.xcassets */,
 				D8F654E22B9EF46000ADEA9D /* Preview Content */,
 			);
@@ -346,8 +380,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8123DF22BCD7AF40010C1EB /* arrivingfly-3.mov in Resources */,
+				D8123DF02BCD7AD00010C1EB /* arrivingfly-1.mov in Resources */,
+				D8123DEC2BCD53240010C1EB /* flyGoingAway.mov in Resources */,
 				D81B08D62BA9E7D300658D07 /* ambience.wav in Resources */,
+				D8123DF62BCD84EF0010C1EB /* flySound.wav in Resources */,
+				D8123DEA2BCD4B4E0010C1EB /* flyingAroundFly.mov in Resources */,
 				D81B08DA2BA9F0C000658D07 /* frCast.wav in Resources */,
+				D8123DEE2BCD789B0010C1EB /* arrivingfly-2.mov in Resources */,
 				D81B08DC2BA9F31900658D07 /* baitLandins.wav in Resources */,
 				D8F654D22B9EF42C00ADEA9D /* Preview Assets.xcassets in Resources */,
 				D8F654FB2B9EFF5100ADEA9D /* GameSceneIphone.sks in Resources */,
@@ -383,6 +423,7 @@
 				D8B53DFD2BB5EF62007B7B4E /* NotificationCenter.swift in Sources */,
 				D8F654F52B9EF55C00ADEA9D /* ViewModel.swift in Sources */,
 				D8D2E7572BB9DBB20098F7F7 /* Fish.swift in Sources */,
+				D85B78992BCC325900F1E119 /* Fly.swift in Sources */,
 				D8F654FD2B9EFF7B00ADEA9D /* SKScriptIphone.swift in Sources */,
 				D8D2E7592BB9F3B20098F7F7 /* FishCollection.swift in Sources */,
 				D8F654CB2B9EF42A00ADEA9D /* WhipDemoApp.swift in Sources */,
@@ -398,6 +439,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D8F654F92B9EF58F00ADEA9D /* ConnectivityProvider.swift in Sources */,
+				D8123DE22BCD2DAE0010C1EB /* ForegroundLoop.swift in Sources */,
 				D8F654F02B9EF4BA00ADEA9D /* ContentView.swift in Sources */,
 				D85B788D2BCAE98D00F1E119 /* SoundRecorder.swift in Sources */,
 				D8F654F22B9EF4C100ADEA9D /* GameSceneScript.swift in Sources */,
@@ -543,6 +585,8 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = WhipDemo/WhipDemo.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WhipDemo/Preview Content\"";
@@ -563,6 +607,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = it.antonioo.tridente.WhipDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -576,6 +621,8 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = WhipDemo/WhipDemo.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WhipDemo/Preview Content\"";
@@ -596,6 +643,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = it.antonioo.tridente.WhipDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -610,6 +658,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "WhipDemoWatch Watch App/WhipDemoWatch Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WhipDemoWatch Watch App/Preview Content\"";
@@ -643,6 +692,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "WhipDemoWatch Watch App/WhipDemoWatch Watch App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WhipDemoWatch Watch App/Preview Content\"";

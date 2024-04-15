@@ -52,6 +52,11 @@ class ConnectivityProvider: NSObject, WCSessionDelegate{
             self.modelUpdates.send(value)
         }
         
+        #if os(watchOS)
+        if value.path == "AwakeSignal" {
+            print("Awake Signal Recieved On the Apple Watch")
+        }
+        #endif
 //        print(value)
         
     }

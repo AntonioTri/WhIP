@@ -34,7 +34,6 @@ class Fish{
         self.setTexturesAndAnimation()
         self.animate()
         
-        // MARK- QUESTA PARTE E' FONDAMENTALE!
         // Dato che il trofeo viene mostrato soltanto se il pesce viene pescato
         // Possivmo salvare allo stesso tempo anche l'avvenuta cattura per segnalarlo alla collezione
         if !savingCenter.getSavedBool(key: String("collectionTrophy-\(self.getPageNumber())-\(typeSpawned)-\(raritySpawned)")) {

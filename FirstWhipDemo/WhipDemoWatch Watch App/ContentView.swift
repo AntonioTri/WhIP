@@ -93,8 +93,8 @@ struct ContentView: View {
                 .onAppear(perform:{
                     self.startGyroscopeUpdates()
                     self.startAccelerometerUpdates()
+                    
                 })
-
             
             //vista spritekit
             Sview(viewModel: viewModel)
@@ -102,11 +102,15 @@ struct ContentView: View {
             //Vista della leva
             LevaView(angle: $scrollAmount)
             
+            
         }
         .padding()
+        .onTapGesture {
+            viewModel.sendMessage(key: "trowBait", value: 1)
+        }
+        
         
     }
-    
     
     private func startAccelerometerUpdates() {
         motionManager.accelerometerUpdateInterval = 0.1
@@ -131,7 +135,6 @@ struct ContentView: View {
             }
         }
     }
-    
     
     // Aggiorna il metodo handleAcceleration(_:) nel ContentView
     private func handleAcceleration(_ acceleration: CMAcceleration) {
@@ -173,12 +176,15 @@ struct ContentView: View {
     private func handleTrow(){
         
         // print("Hai eseguito un lancio")
-        viewModel.canTrow = 0
+        
         currentValue = 0
         viewModel.maxAcceleration = 0
+        print("Prima del secondo segnale")
         
         // Vengono gestiti gli ack
         if viewModel.canTrowSecondSignal == 1 {
+            print("Dentro il secondo segnale, invio sengnale di lancio")
+            viewModel.canTrow = 0
             viewModel.canTrowSecondSignal = 0
             setSemaferoRed = true
             viewModel.sendMessage(key: "trow", value: 1)
@@ -191,15 +197,17 @@ struct ContentView: View {
     private func handleHacknowledgement(){
         // Si prelaziona un tempo alla fine del quale se il segnale non è stato ricevuto
         // Viene reimpostata la possibilità di lanciare
-        Timer.scheduledTimer(withTimeInterval: 3, repeats: false){ _ in
+        Timer.scheduledTimer(withTimeInterval: 5, repeats: false){ _ in
             // Controllo per osservare se l'iphone ha ricevuto il segnale
             if viewModel.trowSignalRecieved == 0 {
                 // Se il segnale non è arrivato, viene reimpostata la possibilitò di pescare
                 viewModel.canTrow = 1
+                viewModel.canTrowSecondSignal = 1
                 setSemaferoGreen = true
                 
             // Altrimenti il segnale è arrivato correttamente e viene resettato localmente
             } else {
+                viewModel.canTrow = 0
                 viewModel.trowSignalRecieved = 0
                 viewModel.sendMessage(key: "trow", value: 0)
             }
@@ -250,8 +258,11 @@ struct LevaView: View {
             .rotationEffect(.degrees(angle), anchor: .center)
             .offset(x: pivotPoint.x, y: pivotPoint.y)
             .scaleEffect(1.2)
+            
         
     }
+    
+
             
 }
 
